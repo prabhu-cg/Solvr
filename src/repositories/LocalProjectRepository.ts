@@ -1,12 +1,23 @@
 import {
   computeOverallReadiness,
   createProjectStages,
+  hydrateStage,
+  STAGE_KEYS,
   type NewProjectInput,
   type Project,
   type ProjectSummary,
 } from '@/data/models'
 import { db } from '@/repositories/db'
 import type { ProjectRepository } from '@/repositories/ProjectRepository'
+
+/** Normalizes a project read from storage so older records always match the current shape. */
+function hydrateProject(project: Project): Project {
+  const stages = { ...project.stages }
+  for (const key of STAGE_KEYS) {
+    stages[key] = hydrateStage(stages[key])
+  }
+  return { ...project, stages }
+}
 
 function toSummary(project: Project): ProjectSummary {
   return {
@@ -55,7 +66,8 @@ export class LocalProjectRepository implements ProjectRepository {
   }
 
   async getProject(id: string): Promise<Project | undefined> {
-    return db.projects.get(id)
+    const project = await db.projects.get(id)
+    return project ? hydrateProject(project) : undefined
   }
 
   async updateProject(id: string, patch: Partial<Omit<Project, 'id' | 'createdAt'>>): Promise<Project> {
@@ -64,7 +76,7 @@ export class LocalProjectRepository implements ProjectRepository {
       throw new Error(`Project not found: ${id}`)
     }
     const updated: Project = {
-      ...existing,
+      ...hydrateProject(existing),
       ...patch,
       updatedAt: new Date().toISOString(),
     }
@@ -78,6 +90,6 @@ export class LocalProjectRepository implements ProjectRepository {
 
   async listProjects(): Promise<ProjectSummary[]> {
     const all = await db.projects.orderBy('updatedAt').reverse().toArray()
-    return all.map(toSummary)
+    return all.map(hydrateProject).map(toSummary)
   }
 }

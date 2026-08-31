@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Navigate, Outlet, useParams } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useParams } from 'react-router-dom'
 import { AppHeader } from '@/components/app/app-header'
 import { ContextPanel } from '@/components/app/context-panel'
 import { StageNav } from '@/components/app/stage-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import type { Project, ProjectStage, StageKey } from '@/data/models'
-import { advanceCurrentStage } from '@/data/models'
+import type { Project, ProjectStage } from '@/data/models'
+import { advanceCurrentStage, PROJECT_STAGE_ORDER } from '@/data/models'
 import { useProjectStore } from '@/store/useProjectStore'
 
 export interface ProjectOutletContext {
@@ -13,8 +13,16 @@ export interface ProjectOutletContext {
   patchProject: (patch: Partial<Omit<Project, 'id' | 'createdAt'>>) => void
 }
 
+/** Derived from the URL rather than a route param — stage routes are static (not `:stage`), so this works regardless of how they're nested. */
+function stageFromPathname(pathname: string): ProjectStage {
+  const lastSegment = pathname.split('/').filter(Boolean).pop()
+  return PROJECT_STAGE_ORDER.includes(lastSegment as ProjectStage) ? (lastSegment as ProjectStage) : 'setup'
+}
+
 export function ProjectWorkspaceLayout() {
-  const { projectId, stage } = useParams<{ projectId: string; stage?: StageKey | 'setup' }>()
+  const { projectId } = useParams<{ projectId: string }>()
+  const location = useLocation()
+  const stage = stageFromPathname(location.pathname)
   const activeProject = useProjectStore((state) => state.activeProject)
   const saveStatus = useProjectStore((state) => state.saveStatus)
   const loadProject = useProjectStore((state) => state.loadProject)
@@ -46,14 +54,13 @@ export function ProjectWorkspaceLayout() {
   // "progress" (no AI/deliverables yet), so arriving at a stage advances the
   // project there — it never regresses just because the user looks back at
   // an earlier stage.
-  const visitedStage: ProjectStage = (stage as ProjectStage | undefined) ?? 'setup'
   useEffect(() => {
     if (!activeProject) return
-    const next = advanceCurrentStage(activeProject.currentStage, visitedStage)
+    const next = advanceCurrentStage(activeProject.currentStage, stage)
     if (next !== activeProject.currentStage) {
       patchActiveProject({ currentStage: next })
     }
-  }, [activeProject, visitedStage, patchActiveProject])
+  }, [activeProject, stage, patchActiveProject])
 
   if (status === 'not-found') {
     return <Navigate to="/app" replace />
@@ -86,7 +93,7 @@ export function ProjectWorkspaceLayout() {
         </main>
 
         <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border bg-card xl:block">
-          <ContextPanel project={activeProject} stage={stage ?? 'setup'} />
+          <ContextPanel project={activeProject} stage={stage} />
         </aside>
       </div>
 
@@ -104,7 +111,7 @@ export function ProjectWorkspaceLayout() {
           <SheetHeader>
             <SheetTitle>Guidance</SheetTitle>
           </SheetHeader>
-          <ContextPanel project={activeProject} stage={stage ?? 'setup'} />
+          <ContextPanel project={activeProject} stage={stage} />
         </SheetContent>
       </Sheet>
     </div>

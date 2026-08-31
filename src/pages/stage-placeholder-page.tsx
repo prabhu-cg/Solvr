@@ -1,25 +1,17 @@
 import { Clock } from 'lucide-react'
-import { Navigate, useParams } from 'react-router-dom'
 import { StageHeader } from '@/components/app/stage-header'
 import { Card, CardContent } from '@/components/ui/card'
 import type { StageKey } from '@/data/models'
-import { STAGE_DESCRIPTIONS, STAGE_KEYS, STAGE_LABELS } from '@/data/models'
+import { STAGE_DESCRIPTIONS, STAGE_LABELS } from '@/data/models'
 
-export function StagePlaceholderPage() {
-  const { stage } = useParams<{ stage: string }>()
+interface StagePlaceholderPageProps {
+  stage: StageKey
+}
 
-  if (!stage || !STAGE_KEYS.includes(stage as StageKey)) {
-    return <Navigate to="../setup" replace />
-  }
-  const stageKey = stage as StageKey
-
+export function StagePlaceholderPage({ stage }: StagePlaceholderPageProps) {
   return (
     <div>
-      <StageHeader
-        title={STAGE_LABELS[stageKey]}
-        description={STAGE_DESCRIPTIONS[stageKey]}
-        status="not_started"
-      />
+      <StageHeader title={STAGE_LABELS[stage]} description={STAGE_DESCRIPTIONS[stage]} status="not_started" />
 
       <div className="px-6 py-8 sm:px-8">
         <Card className="mx-auto max-w-2xl">
@@ -29,8 +21,8 @@ export function StagePlaceholderPage() {
             </span>
             <h2 className="text-base font-bold text-foreground">Coming in a later phase</h2>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {STAGE_LABELS[stageKey]} isn’t available yet. Solvr Phase 1 covers Project Setup —
-              this stage, along with guided AI generation, arrives in a later phase.
+              {STAGE_LABELS[stage]} isn’t available yet. Solvr currently covers Project Setup,
+              Discover and Define — this stage arrives in a later phase.
             </p>
           </CardContent>
         </Card>

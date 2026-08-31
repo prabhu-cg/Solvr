@@ -1,55 +1,71 @@
-import type { Project, StageKey } from '@/data/models'
+import type { AIProjectContext } from '@/ai/context'
+import type { AITaskId } from '@/ai/tasks'
+import type { ReadinessResult } from '@/ai/schemas'
 
 /**
- * Abstraction for future AI-driven generation, critique and synthesis.
- * Phase 1 defines the shape only — no implementation calls a model yet.
- * Discover/Define/Ideate/Solution pages will depend on this interface,
- * not on any specific provider or SDK.
+ * Abstraction for AI-driven generation and critique. The rest of the app
+ * depends only on this interface — never on a provider SDK or model name —
+ * so the underlying provider/model can change without touching a caller.
+ * The actual model call happens server-side (see `api/ai.ts`); this service
+ * only ever talks to our own `/api/ai` endpoint, so no API key is ever
+ * present in frontend code.
  */
 export interface AIGenerateRequest {
-  project: Project
-  stage: StageKey
+  task: AITaskId
+  context: AIProjectContext
   instruction?: string
 }
 
 export interface AICritiqueRequest {
-  project: Project
-  stage: StageKey
+  stage: 'discover' | 'define'
+  context: AIProjectContext
 }
 
-export interface AISynthesizeRequest {
-  project: Project
-  stages: StageKey[]
-}
-
-export interface AIResult {
+export interface AIResult<T = unknown> {
   summary: string
-  content: unknown
+  content: T
 }
 
 export interface AIService {
   generate(request: AIGenerateRequest): Promise<AIResult>
-  critique(request: AICritiqueRequest): Promise<AIResult>
-  synthesize(request: AISynthesizeRequest): Promise<AIResult>
+  critique(request: AICritiqueRequest): Promise<AIResult<ReadinessResult>>
 }
 
-/**
- * Placeholder implementation so the rest of the app can wire against
- * AIService now without a live provider. Every method rejects — Phase 1
- * explicitly does not call AI generation.
- */
-export class NotImplementedAIService implements AIService {
-  async generate(): Promise<AIResult> {
-    throw new Error('AI generation is not available yet.')
+async function postToAI<T>(body: unknown): Promise<AIResult<T>> {
+  const response = await fetch('/api/ai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  const payload = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    const message = payload && typeof payload === 'object' && 'error' in payload ? String(payload.error) : 'AI request failed.'
+    throw new Error(message)
   }
 
-  async critique(): Promise<AIResult> {
-    throw new Error('AI critique is not available yet.')
+  return payload as AIResult<T>
+}
+
+/** V1 implementation — routes through Solvr's own `/api/ai` endpoint (Vercel AI Gateway server-side). */
+export class GatewayAIService implements AIService {
+  async generate(request: AIGenerateRequest): Promise<AIResult> {
+    return postToAI({
+      mode: 'generate',
+      taskId: request.task,
+      context: request.context,
+      instruction: request.instruction,
+    })
   }
 
-  async synthesize(): Promise<AIResult> {
-    throw new Error('AI synthesis is not available yet.')
+  async critique(request: AICritiqueRequest): Promise<AIResult<ReadinessResult>> {
+    return postToAI<ReadinessResult>({
+      mode: 'critique',
+      stage: request.stage,
+      context: request.context,
+    })
   }
 }
 
-export const aiService: AIService = new NotImplementedAIService()
+export const aiService: AIService = new GatewayAIService()

@@ -2,7 +2,15 @@ import { ArrowLeft, ClipboardList } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { StatusBadge } from '@/components/app/status-badge'
 import type { Project } from '@/data/models'
-import { getSetupStatus, STAGE_DESCRIPTIONS, STAGE_KEYS, STAGE_LABELS, STAGE_ORDER_NUMBER } from '@/data/models'
+import {
+  computeStageStatus,
+  getSetupStatus,
+  PROJECT_STAGE_ORDER,
+  STAGE_DESCRIPTIONS,
+  STAGE_KEYS,
+  STAGE_LABELS,
+  STAGE_ORDER_NUMBER,
+} from '@/data/models'
 import { cn } from '@/lib/utils'
 
 interface StageNavProps {
@@ -48,6 +56,8 @@ export function StageNav({ project, onNavigate }: StageNavProps) {
 
         {STAGE_KEYS.map((key) => {
           const stage = project.stages[key]
+          const hasMovedPast = PROJECT_STAGE_ORDER.indexOf(project.currentStage) > PROJECT_STAGE_ORDER.indexOf(key)
+          const status = computeStageStatus(stage, hasMovedPast)
           return (
             <NavLink
               key={key}
@@ -67,7 +77,7 @@ export function StageNav({ project, onNavigate }: StageNavProps) {
               <span className="flex-1">
                 <span className="block font-bold">{STAGE_LABELS[key]}</span>
               </span>
-              <StatusBadge status={stage.status} iconOnly className="mt-0.5" />
+              <StatusBadge status={status} iconOnly className="mt-0.5" />
             </NavLink>
           )
         })}
