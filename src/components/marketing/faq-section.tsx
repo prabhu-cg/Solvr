@@ -43,7 +43,7 @@ const FAQS = [
 
 export function FAQSection() {
   return (
-    <section id="faq" className="scroll-mt-16 py-20 sm:py-28">
+    <section id="faq" className="scroll-mt-16 border-t border-border bg-secondary py-20 sm:py-28">
       <Container className="max-w-3xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-wide text-primary-text">FAQ</p>

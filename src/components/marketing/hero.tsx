@@ -1,6 +1,5 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { AppPreview } from '@/components/marketing/app-preview'
 import { Container } from '@/components/marketing/container'
 import { Button } from '@/components/ui/button'
 
@@ -40,8 +39,14 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="mx-auto mt-16 max-w-4xl">
-          <AppPreview />
+        <div className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-xl border border-border shadow-lg">
+          <img
+            src="/app-screenshot.jpg"
+            alt="The Solvr workspace showing a Discover-stage readiness check, with strengths, gaps and critical assumptions surfaced for a project."
+            className="block w-full"
+            width={1469}
+            height={812}
+          />
         </div>
       </Container>
     </section>

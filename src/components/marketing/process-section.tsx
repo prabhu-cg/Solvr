@@ -36,7 +36,7 @@ const STEPS = [
 
 export function ProcessSection() {
   return (
-    <section id="how-it-works" className="scroll-mt-16 py-20 sm:py-28">
+    <section id="how-it-works" className="scroll-mt-16 border-t border-border py-20 sm:py-28">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <p id="process" className="scroll-mt-16 text-sm font-bold uppercase tracking-wide text-primary-text">

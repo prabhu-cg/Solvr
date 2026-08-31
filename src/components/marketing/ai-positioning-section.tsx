@@ -3,7 +3,7 @@ import { Container } from '@/components/marketing/container'
 
 export function AIPositioningSection() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="border-t border-border py-20 sm:py-28">
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>

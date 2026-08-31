@@ -19,7 +19,7 @@ export function MarketingNav() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center" aria-label="Solvr home">
-          <Logo />
+          <Logo withTagline />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
