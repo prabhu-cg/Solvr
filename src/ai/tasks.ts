@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import type { AIProjectContext } from './context'
+import type { AIProjectContext } from './context.js'
 import {
   assumptionsSchema,
   conceptsSchema,
@@ -18,8 +18,8 @@ import {
   surveyQuestionsSchema,
   userJourneySchema,
   userNeedsSchema,
-} from './schemas'
-import type { StageKey } from '../data/models'
+} from './schemas.js'
+import type { StageKey } from '../data/models.js'
 
 export type DiscoverTaskLocalId =
   | 'researchPlan'

@@ -2,8 +2,8 @@ import { groq } from '@ai-sdk/groq'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { generateText, NoObjectGeneratedError, Output } from 'ai'
 import { z } from 'zod'
-import { buildTaskPrompt, AI_SYSTEM_PROMPT, AI_TASKS, READINESS_SCHEMA, READINESS_TASK_INSTRUCTION } from '../src/ai/tasks'
-import type { AIProjectContext } from '../src/ai/context'
+import { buildTaskPrompt, AI_SYSTEM_PROMPT, AI_TASKS, READINESS_SCHEMA, READINESS_TASK_INSTRUCTION } from '../src/ai/tasks.js'
+import type { AIProjectContext } from '../src/ai/context.js'
 
 // Server-only: never exposed to the client. The model/provider is chosen
 // here in one place — swapping providers later (a different Groq model, a

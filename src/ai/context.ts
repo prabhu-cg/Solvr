@@ -1,5 +1,5 @@
-import type { Project, ProjectStage, StageKey } from '../data/models'
-import { PROJECT_STAGE_ORDER } from '../data/models'
+import type { Project, ProjectStage, StageKey } from '../data/models.js'
+import { PROJECT_STAGE_ORDER } from '../data/models.js'
 
 /**
  * The trimmed, structured context sent to the AI backend. This — and
