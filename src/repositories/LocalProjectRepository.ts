@@ -7,6 +7,7 @@ import {
   type Project,
   type ProjectSummary,
 } from '@/data/models'
+import { SAMPLE_PROJECT_STAGES } from '@/data/sampleProjectStages'
 import { db } from '@/repositories/db'
 import type { ProjectRepository } from '@/repositories/ProjectRepository'
 
@@ -55,8 +56,8 @@ export class LocalProjectRepository implements ProjectRepository {
       businessGoal: input.businessGoal,
       constraints: input.constraints,
       evidence: input.evidence,
-      currentStage: 'setup',
-      stages: createProjectStages(),
+      currentStage: input.isSample ? 'solution' : 'setup',
+      stages: input.isSample ? structuredClone(SAMPLE_PROJECT_STAGES) : createProjectStages(),
       isSample: input.isSample,
       createdAt: now,
       updatedAt: now,

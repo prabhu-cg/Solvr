@@ -52,6 +52,7 @@ export function SolutionPage() {
               status={readinessHook.status}
               error={readinessHook.error}
               onRun={readinessHook.run}
+              reasoning={readinessHook.reasoning}
             />
 
             <InformationArchitectureCard />

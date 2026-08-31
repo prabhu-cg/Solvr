@@ -13,16 +13,23 @@ export function useReadiness(stage: CritiqueStage) {
   const readiness = project?.stages[stage]?.readiness
   const [status, setStatus] = useState<ReadinessRunStatus>('idle')
   const [error, setError] = useState<string | undefined>(undefined)
+  // Live reasoning trace while the assessment is in flight — the assessment itself only ever arrives once, at the end.
+  const [reasoning, setReasoning] = useState('')
 
   const run = useCallback(async () => {
     const latest = useProjectStore.getState().activeProject
     if (!latest) return
     setStatus('loading')
     setError(undefined)
+    setReasoning('')
 
     try {
       const context = buildAIContext(latest, stage)
-      const result = await aiService.critique({ stage, context })
+      const result = await aiService.critique({
+        stage,
+        context,
+        onReasoning: (delta) => setReasoning((prev) => prev + delta),
+      })
 
       const current = useProjectStore.getState().activeProject
       if (!current) return
@@ -41,8 +48,10 @@ export function useReadiness(stage: CritiqueStage) {
     } catch (err) {
       setStatus('failed')
       setError(err instanceof Error ? err.message : 'Could not assess readiness. Please try again.')
+    } finally {
+      setReasoning('')
     }
   }, [stage, patchActiveProject])
 
-  return { readiness, run, status, error }
+  return { readiness, run, status, error, reasoning }
 }

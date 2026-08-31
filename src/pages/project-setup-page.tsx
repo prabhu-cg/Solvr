@@ -44,6 +44,7 @@ export function ProjectSetupPage() {
               evidence: project.evidence ?? '',
             }}
             onFieldChange={handleFieldChange}
+            readOnly={project.isSample}
           />
 
           <div className="mt-8 flex justify-end border-t border-border pt-6">

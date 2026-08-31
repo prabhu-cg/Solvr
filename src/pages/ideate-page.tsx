@@ -31,6 +31,7 @@ export function IdeatePage() {
           status={readinessHook.status}
           error={readinessHook.error}
           onRun={readinessHook.run}
+          reasoning={readinessHook.reasoning}
           nextStageHref={`/app/projects/${project.id}/solution`}
           nextStageLabel="Solution"
         />

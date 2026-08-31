@@ -10,12 +10,13 @@ import type { EvidenceType } from '@/data/models'
 import { useDeliverable } from '@/hooks/use-deliverable'
 
 export function ResearchPlanCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ResearchPlan>('discover', 'researchPlan')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ResearchPlan>('discover', 'researchPlan')
   return (
     <DeliverableCard
       label="Research Plan"
       description="What this research needs to establish, and how to go about it."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -90,12 +91,13 @@ const INTERVIEW_CATEGORIES: { key: keyof InterviewQuestions; label: string }[] =
 ]
 
 export function InterviewQuestionsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<InterviewQuestions>('discover', 'interviewQuestions')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<InterviewQuestions>('discover', 'interviewQuestions')
   return (
     <DeliverableCard
       label="Interview Questions"
       description="Neutral, non-leading questions organised by conversation flow."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -130,12 +132,13 @@ const SURVEY_CATEGORIES: { key: keyof SurveyQuestions; label: string }[] = [
 ]
 
 export function SurveyQuestionsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<SurveyQuestions>('discover', 'surveyQuestions')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<SurveyQuestions>('discover', 'surveyQuestions')
   return (
     <DeliverableCard
       label="Survey Questions"
       description="Unbiased questions ready to adapt into a survey."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -177,12 +180,13 @@ const EMPTY_ASSUMPTION: AssumptionItem = {
 }
 
 export function AssumptionsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Assumptions>('discover', 'assumptions')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Assumptions>('discover', 'assumptions')
   return (
     <DeliverableCard
       label="Assumptions"
       description="What's currently being assumed about this problem, and how confident that is."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -239,13 +243,23 @@ function SynthesisSection({ title, items }: { title: string; items: { text: stri
   )
 }
 
+type SynthesisItem = { text: string; type: EvidenceType }
+
+const SYNTHESIS_ITEM_FIELDS: RecordFieldSpec<SynthesisItem>[] = [
+  { key: 'text', label: 'Text', kind: 'textarea' },
+  { key: 'type', label: 'Type', kind: 'evidenceType' },
+]
+
+const EMPTY_SYNTHESIS_ITEM = (): SynthesisItem => ({ text: '', type: 'inference' })
+
 export function ResearchSynthesisCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ResearchSynthesis>('discover', 'researchSynthesis')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ResearchSynthesis>('discover', 'researchSynthesis')
   return (
     <DeliverableCard
       label="Research Synthesis"
       description="Evidence pulled together into observations, findings, themes and insights."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -269,15 +283,12 @@ export function ResearchSynthesisCard() {
         <EditStack>
           {(['observations', 'findings', 'themes', 'insights'] as const).map((key) => (
             <EditField key={key} label={key.charAt(0).toUpperCase() + key.slice(1)}>
-              <StringListEditor
-                value={content[key].map((item) => item.text)}
-                onChange={(texts) =>
-                  onChange({
-                    ...content,
-                    [key]: texts.map((text, i) => ({ text, type: content[key][i]?.type ?? 'inference' })),
-                  })
-                }
-                itemLabel="item"
+              <RecordListEditor
+                value={content[key]}
+                onChange={(items) => onChange({ ...content, [key]: items })}
+                fields={SYNTHESIS_ITEM_FIELDS}
+                itemLabel="Item"
+                emptyItem={EMPTY_SYNTHESIS_ITEM}
               />
             </EditField>
           ))}

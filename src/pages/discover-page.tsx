@@ -35,6 +35,7 @@ export function DiscoverPage() {
           status={readinessHook.status}
           error={readinessHook.error}
           onRun={readinessHook.run}
+          reasoning={readinessHook.reasoning}
           nextStageHref={`/app/projects/${project.id}/define`}
           nextStageLabel="Define"
         />

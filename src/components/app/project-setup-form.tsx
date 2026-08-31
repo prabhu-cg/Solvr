@@ -90,6 +90,8 @@ interface ProjectSetupFormProps {
   formId?: string
   /** Hide the built-in submit button — used when the caller renders its own (e.g. a sticky drawer footer). */
   hideSubmitButton?: boolean
+  /** The bundled sample project — fields are shown but not editable. */
+  readOnly?: boolean
 }
 
 export function ProjectSetupForm({
@@ -100,6 +102,7 @@ export function ProjectSetupForm({
   onFieldChange,
   formId,
   hideSubmitButton,
+  readOnly,
 }: ProjectSetupFormProps) {
   const form = useForm<ProjectSetupValues>({
     resolver: zodResolver(projectSetupSchema),
@@ -115,12 +118,12 @@ export function ProjectSetupForm({
   } = form
 
   useEffect(() => {
-    if (mode !== 'edit' || !onFieldChange) return
+    if (mode !== 'edit' || !onFieldChange || readOnly) return
     const subscription = watch((values) => {
       onFieldChange(values as ProjectSetupValues)
     })
     return () => subscription.unsubscribe()
-  }, [mode, onFieldChange, watch])
+  }, [mode, onFieldChange, watch, readOnly])
 
   function renderField(field: FieldSpec) {
     const error = errors[field.name]
@@ -145,6 +148,7 @@ export function ProjectSetupForm({
           aria-invalid={Boolean(error)}
           aria-describedby={`${field.name}-helper${error ? ` ${field.name}-error` : ''}`}
           rows={field.multiline ? 3 : undefined}
+          readOnly={readOnly}
           {...register(field.name)}
         />
         {error && (

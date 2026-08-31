@@ -1,6 +1,7 @@
 import { Check, Pencil, RotateCcw, Sparkles, TriangleAlert, X } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { GenerationStateBadge } from '@/components/ai/generation-state-badge'
+import { ReasoningStream } from '@/components/ai/reasoning-stream'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -12,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { DeliverableState } from '@/data/models'
+import { useProjectStore } from '@/store/useProjectStore'
 
 interface DeliverableCardProps<T> {
   label: string
@@ -24,6 +26,8 @@ interface DeliverableCardProps<T> {
   onEditChange: (next: T) => void
   /** Clears the "may be affected" flag without regenerating — the user reviewed it and it's still fine. */
   onDismissStale?: () => void
+  /** The model's live reasoning trace while generating — see `reasoning-stream.tsx`. */
+  reasoning?: string
 }
 
 export function DeliverableCard<T>({
@@ -36,9 +40,11 @@ export function DeliverableCard<T>({
   renderEdit,
   onEditChange,
   onDismissStale,
+  reasoning,
 }: DeliverableCardProps<T>) {
   const [editing, setEditing] = useState(false)
   const [confirmRegenerateOpen, setConfirmRegenerateOpen] = useState(false)
+  const readOnly = useProjectStore((state) => state.activeProject?.isSample ?? false)
 
   const isBusy = deliverable.status === 'preparing' || deliverable.status === 'generating'
   const hasContent = deliverable.content !== undefined
@@ -72,31 +78,40 @@ export function DeliverableCard<T>({
       <CardContent>
         {deliverable.status === 'idle' && (
           <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border-strong p-5">
-            <p className="text-sm text-muted-foreground">Nothing generated yet.</p>
-            <Button onClick={handleGenerateClick}>
-              <Sparkles className="size-4" />
-              Generate
-            </Button>
+            <p className="text-sm text-muted-foreground">
+              {readOnly ? 'Nothing generated.' : 'Nothing generated yet.'}
+            </p>
+            {!readOnly && (
+              <Button onClick={handleGenerateClick}>
+                <Sparkles className="size-4" />
+                Generate
+              </Button>
+            )}
           </div>
         )}
 
         {isBusy && (
-          <div className="flex items-center gap-2 rounded-lg border border-dashed border-border-strong p-5 text-sm text-muted-foreground">
-            <GenerationStateBadge status={deliverable.status} />
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <GenerationStateBadge status={deliverable.status} />
+            </div>
+            {deliverable.status === 'generating' && <ReasoningStream text={reasoning ?? ''} />}
           </div>
         )}
 
         {!isBusy && deliverable.status === 'failed' && (
           <div className="mb-4 rounded-lg border border-destructive-soft bg-destructive-soft p-4">
             <p className="text-sm font-semibold text-destructive">{deliverable.error ?? 'Generation failed.'}</p>
-            <Button variant="secondary" size="sm" className="mt-3" onClick={handleGenerateClick}>
-              <RotateCcw className="size-3.5" />
-              Retry
-            </Button>
+            {!readOnly && (
+              <Button variant="secondary" size="sm" className="mt-3" onClick={handleGenerateClick}>
+                <RotateCcw className="size-3.5" />
+                Retry
+              </Button>
+            )}
           </div>
         )}
 
-        {!isBusy && hasContent && deliverable.possiblyStale && (
+        {!isBusy && hasContent && !readOnly && deliverable.possiblyStale && (
           <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-warning-soft bg-warning-soft p-3">
             <TriangleAlert className="size-4 shrink-0 text-warning" aria-hidden />
             <p className="flex-1 text-sm font-medium text-warning">
@@ -113,15 +128,19 @@ export function DeliverableCard<T>({
         {!isBusy && hasContent && (
           <>
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setEditing((v) => !v)}>
-                {editing ? <X className="size-3.5" /> : <Pencil className="size-3.5" />}
-                {editing ? 'Done editing' : 'Edit'}
-              </Button>
-              <Button variant="secondary" size="sm" onClick={handleGenerateClick}>
-                <RotateCcw className="size-3.5" />
-                Regenerate
-              </Button>
-              {!deliverable.accepted && (
+              {!readOnly && (
+                <>
+                  <Button variant="secondary" size="sm" onClick={() => setEditing((v) => !v)}>
+                    {editing ? <X className="size-3.5" /> : <Pencil className="size-3.5" />}
+                    {editing ? 'Done editing' : 'Edit'}
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={handleGenerateClick}>
+                    <RotateCcw className="size-3.5" />
+                    Regenerate
+                  </Button>
+                </>
+              )}
+              {!readOnly && !deliverable.accepted && (
                 <Button size="sm" onClick={onAccept}>
                   <Check className="size-3.5" />
                   Accept
@@ -135,7 +154,7 @@ export function DeliverableCard<T>({
               )}
             </div>
 
-            {editing ? renderEdit(deliverable.content as T, onEditChange) : renderView(deliverable.content as T)}
+            {editing && !readOnly ? renderEdit(deliverable.content as T, onEditChange) : renderView(deliverable.content as T)}
           </>
         )}
       </CardContent>

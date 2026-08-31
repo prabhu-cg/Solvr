@@ -37,6 +37,7 @@ export function DefinePage() {
           status={readinessHook.status}
           error={readinessHook.error}
           onRun={readinessHook.run}
+          reasoning={readinessHook.reasoning}
           nextStageHref={`/app/projects/${project.id}/ideate`}
           nextStageLabel="Ideate"
         />

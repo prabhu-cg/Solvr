@@ -29,7 +29,7 @@ function ConfidenceMeter({ label, value }: { label: string; value: number }) {
 }
 
 export function DesignConfidenceCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<DesignConfidence>(
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<DesignConfidence>(
     'solution',
     'designConfidence',
   )
@@ -38,6 +38,7 @@ export function DesignConfidenceCard() {
       label="Design Confidence"
       description="Not a validation score — a breakdown of how well-grounded this solution is so far."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}

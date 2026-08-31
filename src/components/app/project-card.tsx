@@ -45,7 +45,7 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
           {project.isSample && <Badge variant="primary">Sample project — fictional</Badge>}
         </div>
         <div className="relative z-10">
-          <ProjectMenu projectId={project.id} projectName={project.name} />
+          <ProjectMenu projectId={project.id} projectName={project.name} isSample={project.isSample} />
         </div>
       </div>
 

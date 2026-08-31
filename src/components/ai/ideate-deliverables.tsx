@@ -26,12 +26,13 @@ const EMPTY_OPPORTUNITY: OpportunityItem = {
 }
 
 export function OpportunitiesCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Opportunities>('ideate', 'opportunities')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Opportunities>('ideate', 'opportunities')
   return (
     <DeliverableCard
       label="Opportunities"
       description="Opportunity areas drawn from Define — not solutions yet."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -99,7 +100,7 @@ function withStableIds(raw: { items: Concept[] }): ConceptsWithIds {
 }
 
 export function ConceptsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ConceptsWithIds>('ideate', 'concepts', {
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ConceptsWithIds>('ideate', 'concepts', {
     transformContent: (raw) => withStableIds(raw as { items: Concept[] }),
   })
   return (
@@ -107,6 +108,7 @@ export function ConceptsCard() {
       label="Concepts"
       description="3-5 substantially different approaches — not variations of the same idea."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -165,12 +167,13 @@ const EMPTY_PRIORITISATION_ITEM: PrioritisationItem = {
 }
 
 export function PrioritisationCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Prioritisation>('ideate', 'prioritisation')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Prioritisation>('ideate', 'prioritisation')
   return (
     <DeliverableCard
       label="Prioritisation"
       description="Concepts scored for comparison — not objective measurements."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}

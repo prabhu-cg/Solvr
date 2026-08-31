@@ -23,9 +23,11 @@ interface ProjectMenuProps {
   projectName: string
   /** Where to send the user after a successful delete. Defaults to the projects list. */
   redirectOnDeleteTo?: string
+  /** The bundled sample project — nothing in this menu can be deleted, so it isn't shown. */
+  isSample?: boolean
 }
 
-export function ProjectMenu({ projectId, projectName, redirectOnDeleteTo = '/app' }: ProjectMenuProps) {
+export function ProjectMenu({ projectId, projectName, redirectOnDeleteTo = '/app', isSample }: ProjectMenuProps) {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const deleteProject = useProjectStore((state) => state.deleteProject)
@@ -38,6 +40,8 @@ export function ProjectMenu({ projectId, projectName, redirectOnDeleteTo = '/app
     setConfirmOpen(false)
     navigate(redirectOnDeleteTo)
   }
+
+  if (isSample) return null
 
   return (
     <>

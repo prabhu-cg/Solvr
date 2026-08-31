@@ -20,7 +20,7 @@ import type {
 import { useDeliverable } from '@/hooks/use-deliverable'
 
 export function InformationArchitectureCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<InformationArchitecture>(
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<InformationArchitecture>(
     'solution',
     'informationArchitecture',
   )
@@ -29,6 +29,7 @@ export function InformationArchitectureCard() {
       label="Information Architecture"
       description="Product areas, sections and pages, built on the selected concept."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -79,12 +80,13 @@ const FLOW_STEP_FIELDS: RecordFieldSpec<FlowStep>[] = [
 ]
 
 export function UserFlowCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<UserFlow>('solution', 'userFlow')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<UserFlow>('solution', 'userFlow')
   return (
     <DeliverableCard
       label="User Flow"
       description="Start to completion, with the decision points and recovery paths along the way."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -143,12 +145,13 @@ const SCREEN_LIST_FIELDS: RecordFieldSpec<ScreenListItem>[] = [
 const EMPTY_SCREEN: ScreenListItem = { screen: '', purpose: '', userGoal: '', primaryAction: '', keyContent: '', flowStep: '' }
 
 export function ScreenListCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ScreenList>('solution', 'screenList')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ScreenList>('solution', 'screenList')
   return (
     <DeliverableCard
       label="Screen List"
       description="Every screen implied by the IA and flow."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -215,7 +218,7 @@ const WIREFRAME_FIELDS: RecordFieldSpec<WireframeSpec>[] = [
 ]
 
 export function WireframeSpecsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<WireframeSpecs>(
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<WireframeSpecs>(
     'solution',
     'wireframeSpecs',
   )
@@ -224,6 +227,7 @@ export function WireframeSpecsCard() {
       label="Wireframe Specification"
       description="A structured spec for each primary screen — not a visual wireframe."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -302,7 +306,7 @@ const PRIORITY_GROUPS: { key: RequirementItem['priority']; label: string }[] = [
 ]
 
 export function ProductRequirementsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ProductRequirements>(
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ProductRequirements>(
     'solution',
     'productRequirements',
   )
@@ -311,6 +315,7 @@ export function ProductRequirementsCard() {
       label="Product Requirements"
       description="Concise, implementation-oriented requirements, grouped by priority."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}

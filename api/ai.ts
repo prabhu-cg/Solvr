@@ -1,6 +1,6 @@
 import { groq } from '@ai-sdk/groq'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { generateText, NoObjectGeneratedError, Output } from 'ai'
+import { NoObjectGeneratedError, Output, streamText } from 'ai'
 import { z } from 'zod'
 import {
   buildTaskPrompt,
@@ -73,6 +73,24 @@ function describeReadinessContext(context: AIProjectContext): string {
   return lines.join('\n')
 }
 
+/**
+ * The response streams newline-delimited JSON events so the client can show
+ * live work happening instead of a sudden block once the whole thing is
+ * done:
+ *   {"type":"reasoning","text":"<delta>"}
+ *   {"type":"final","summary":"...","content":<schema-validated object>}
+ *   {"type":"error","error":"..."}
+ * The structured deliverable itself only ever arrives once, in the "final"
+ * event — this model commits it atomically after reasoning rather than
+ * streaming it field by field, so the reasoning trace is what's actually
+ * streamed while the request is in flight. Once streaming has started,
+ * headers/status are already committed — any failure past that point can
+ * only be signalled with an "error" event, never an HTTP status.
+ */
+function writeEvent(res: VercelResponse, event: { type: 'reasoning'; text: string } | { type: 'final'; summary: string; content: unknown } | { type: 'error'; error: string }) {
+  res.write(`${JSON.stringify(event)}\n`)
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' })
@@ -86,47 +104,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const body = parsedRequest.data
 
+  if (body.mode === 'generate' && !AI_TASKS[body.taskId as keyof typeof AI_TASKS]) {
+    res.status(400).json({ error: `Unknown task: ${body.taskId}` })
+    return
+  }
+
+  res.writeHead(200, {
+    'Content-Type': 'application/x-ndjson; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'X-Accel-Buffering': 'no',
+  })
+
   try {
     if (body.mode === 'generate') {
       const task = AI_TASKS[body.taskId as keyof typeof AI_TASKS]
-      if (!task) {
-        res.status(400).json({ error: `Unknown task: ${body.taskId}` })
-        return
-      }
-
       const { instructions, prompt } = buildTaskPrompt(task, body.context, body.instruction)
-      const { output } = await generateText({
-        model: MODEL,
-        instructions,
-        prompt,
-        output: Output.object({ schema: task.schema }),
-      })
+      const result = streamText({ model: MODEL, instructions, prompt, output: Output.object({ schema: task.schema }) })
 
-      res.status(200).json({ summary: `${task.label} generated.`, content: output })
+      for await (const part of result.fullStream) {
+        if (part.type === 'reasoning-delta') writeEvent(res, { type: 'reasoning', text: part.text })
+      }
+      const content = await result.output
+      writeEvent(res, { type: 'final', summary: `${task.label} generated.`, content })
+      res.end()
       return
     }
 
     // mode === 'critique'
     const instruction = READINESS_TASK_INSTRUCTION[body.stage]
     const prompt = `${describeReadinessContext(body.context)}\n\n${instruction}`
-    const { output } = await generateText({
-      model: MODEL,
-      instructions: AI_SYSTEM_PROMPT,
-      prompt,
-      output: Output.object({ schema: READINESS_SCHEMA }),
-    })
+    const result = streamText({ model: MODEL, instructions: AI_SYSTEM_PROMPT, prompt, output: Output.object({ schema: READINESS_SCHEMA }) })
 
-    const stageLabel = body.stage.charAt(0).toUpperCase() + body.stage.slice(1)
-    res.status(200).json({
-      summary: `${stageLabel} readiness: ${output.score}%`,
-      content: output,
-    })
-  } catch (error) {
-    if (NoObjectGeneratedError.isInstance(error)) {
-      res.status(502).json({ error: 'The AI response could not be validated. Please try again.' })
-      return
+    for await (const part of result.fullStream) {
+      if (part.type === 'reasoning-delta') writeEvent(res, { type: 'reasoning', text: part.text })
     }
-    console.error('AI generation failed', error)
-    res.status(500).json({ error: 'AI generation failed. Please try again.' })
+    const content = await result.output
+    const stageLabel = body.stage.charAt(0).toUpperCase() + body.stage.slice(1)
+    writeEvent(res, { type: 'final', summary: `${stageLabel} readiness: ${content.score}%`, content })
+    res.end()
+  } catch (error) {
+    const message = NoObjectGeneratedError.isInstance(error)
+      ? 'The AI response could not be validated. Please try again.'
+      : 'AI generation failed. Please try again.'
+    if (!NoObjectGeneratedError.isInstance(error)) {
+      console.error('AI generation failed', error)
+    }
+    writeEvent(res, { type: 'error', error: message })
+    res.end()
   }
 }

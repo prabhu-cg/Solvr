@@ -101,6 +101,8 @@ export const useProjectStore = create<ProjectStoreState>((set, get) => ({
   },
 
   deleteProject: async (id: string) => {
+    const target = get().projects.find((project) => project.id === id) ?? get().activeProject
+    if (target?.id === id && target.isSample) return
     await projectRepository.deleteProject(id)
     const projects = await projectRepository.listProjects()
     set((state) => ({

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { buildAIContext } from '@/ai/context'
 import type { AITaskId } from '@/ai/tasks'
 import { createIdleDeliverable, markDownstreamStale, type DeliverableState, type Project, type StageKey } from '@/data/models'
@@ -41,6 +41,8 @@ export function useDeliverable<T = unknown>(
   const taskId = `${stage}.${localId}` as AITaskId
 
   const deliverable = (project?.stages[stage]?.content[localId] ?? createIdleDeliverable()) as DeliverableState<T>
+  // Live, unpersisted reasoning trace while a generation is in flight — the deliverable itself only ever arrives once, at the end.
+  const [reasoning, setReasoning] = useState('')
 
   const generate = useCallback(
     async (instruction?: string) => {
@@ -48,6 +50,7 @@ export function useDeliverable<T = unknown>(
       if (!latest) return
       const before = latest.stages[stage].content[localId] as DeliverableState<T> | undefined
 
+      setReasoning('')
       writeDeliverable(patchActiveProject, stage, localId, {
         status: 'preparing',
         content: before?.content,
@@ -64,7 +67,12 @@ export function useDeliverable<T = unknown>(
           updatedAt: new Date().toISOString(),
         })
 
-        const result = await aiService.generate({ task: taskId, context, instruction })
+        const result = await aiService.generate({
+          task: taskId,
+          context,
+          instruction,
+          onReasoning: (delta) => setReasoning((prev) => prev + delta),
+        })
         const content = options?.transformContent ? options.transformContent(result.content) : (result.content as T)
 
         writeDeliverable(patchActiveProject, stage, localId, {
@@ -83,6 +91,8 @@ export function useDeliverable<T = unknown>(
           error: error instanceof Error ? error.message : 'Generation failed. Please try again.',
           updatedAt: new Date().toISOString(),
         })
+      } finally {
+        setReasoning('')
       }
     },
     [stage, localId, taskId, patchActiveProject, options],
@@ -131,5 +141,5 @@ export function useDeliverable<T = unknown>(
     })
   }, [deliverable, patchActiveProject, stage, localId])
 
-  return { deliverable, generate, accept, updateContent, dismissStale }
+  return { deliverable, generate, accept, updateContent, dismissStale, reasoning }
 }

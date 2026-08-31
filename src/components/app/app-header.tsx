@@ -1,4 +1,4 @@
-import { ChevronDown, FolderKanban, Info, Menu, Settings } from 'lucide-react'
+import { ChevronDown, FolderKanban, Info, Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/brand/logo'
 import { ProjectMenu } from '@/components/app/project-menu'
@@ -104,11 +104,7 @@ export function AppHeader({ project, saveStatus = 'idle', onOpenMobileNav, onOpe
           </Button>
         )}
 
-        {project && <ProjectMenu projectId={project.id} projectName={project.name} />}
-
-        <Button variant="ghost" size="icon" aria-label="Settings (coming soon)" disabled title="Settings — coming soon">
-          <Settings className="size-4" />
-        </Button>
+        {project && <ProjectMenu projectId={project.id} projectName={project.name} isSample={project.isSample} />}
       </div>
     </header>
   )

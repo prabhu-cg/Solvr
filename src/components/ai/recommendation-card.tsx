@@ -7,12 +7,13 @@ import type { Recommendation } from '@/ai/schemas'
 import { useDeliverable } from '@/hooks/use-deliverable'
 
 export function RecommendationCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Recommendation>('ideate', 'recommendation')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Recommendation>('ideate', 'recommendation')
   return (
     <DeliverableCard
       label="Recommendation"
       description="One recommended concept, with the reasoning behind it — you decide whether to follow it."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}

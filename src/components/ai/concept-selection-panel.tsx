@@ -26,8 +26,10 @@ export function ConceptSelectionPanel({ project, patchProject }: ConceptSelectio
   const recommendedConcept = recommendation
     ? concepts?.items.find((c) => c.name === recommendation.recommendedConceptName)
     : undefined
+  const readOnly = !!project.isSample
 
   function selectConcept(id: string) {
+    if (readOnly) return
     patchProject({
       stages: {
         ...project.stages,
@@ -60,10 +62,12 @@ export function ConceptSelectionPanel({ project, patchProject }: ConceptSelectio
             <p className="text-sm text-muted-foreground">
               Solvr recommends <span className="font-semibold text-foreground">{recommendedConcept.name}</span>.
             </p>
-            <Button onClick={() => selectConcept(recommendedConcept.id)}>
-              <Check className="size-4" />
-              Accept recommendation
-            </Button>
+            {!readOnly && (
+              <Button onClick={() => selectConcept(recommendedConcept.id)}>
+                <Check className="size-4" />
+                Accept recommendation
+              </Button>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-2 rounded-lg border border-dashed border-border-strong p-4 text-sm text-muted-foreground">
@@ -80,12 +84,14 @@ export function ConceptSelectionPanel({ project, patchProject }: ConceptSelectio
                 key={concept.id}
                 type="button"
                 onClick={() => selectConcept(concept.id)}
+                disabled={readOnly}
                 aria-pressed={concept.id === selectedId}
                 className={cn(
                   'rounded-md border p-3 text-left text-sm transition-colors',
                   concept.id === selectedId
                     ? 'border-primary bg-accent font-semibold text-accent-foreground'
                     : 'border-border hover:bg-muted',
+                  readOnly && 'cursor-default hover:bg-transparent',
                 )}
               >
                 {concept.name}

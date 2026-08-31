@@ -1,10 +1,12 @@
 import { ArrowRight, CircleCheck, ListChecks, RotateCcw, Sparkles, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ReasoningStream } from '@/components/ai/reasoning-stream'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ReadinessAssessment } from '@/data/models'
 import type { ReadinessRunStatus } from '@/hooks/use-readiness'
 import { cn } from '@/lib/utils'
+import { useProjectStore } from '@/store/useProjectStore'
 
 interface ReadinessPanelProps {
   stageLabel: string
@@ -14,6 +16,7 @@ interface ReadinessPanelProps {
   onRun: () => void
   nextStageHref?: string
   nextStageLabel?: string
+  reasoning?: string
 }
 
 export function ReadinessPanel({
@@ -24,8 +27,10 @@ export function ReadinessPanel({
   onRun,
   nextStageHref,
   nextStageLabel,
+  reasoning,
 }: ReadinessPanelProps) {
   const loading = status === 'loading'
+  const readOnly = useProjectStore((state) => state.activeProject?.isSample ?? false)
 
   return (
     <Card className="border-border-strong">
@@ -54,26 +59,31 @@ export function ReadinessPanel({
             <p className="text-sm text-muted-foreground">
               Run a readiness check to see what's strong, what's missing, and whether this stage is ready to move on.
             </p>
-            <Button onClick={onRun}>
-              <Sparkles className="size-4" />
-              Run readiness check
-            </Button>
+            {!readOnly && (
+              <Button onClick={onRun}>
+                <Sparkles className="size-4" />
+                Run readiness check
+              </Button>
+            )}
           </div>
         )}
 
         {loading && (
-          <p className="flex items-center gap-2 rounded-lg border border-dashed border-border-strong p-5 text-sm text-muted-foreground">
-            Assessing readiness…
-          </p>
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-muted-foreground">Assessing readiness…</p>
+            <ReasoningStream text={reasoning ?? ''} />
+          </div>
         )}
 
         {!loading && error && (
           <div className="mb-4 rounded-lg border border-destructive-soft bg-destructive-soft p-4">
             <p className="text-sm font-semibold text-destructive">{error}</p>
-            <Button variant="secondary" size="sm" className="mt-3" onClick={onRun}>
-              <RotateCcw className="size-3.5" />
-              Retry
-            </Button>
+            {!readOnly && (
+              <Button variant="secondary" size="sm" className="mt-3" onClick={onRun}>
+                <RotateCcw className="size-3.5" />
+                Retry
+              </Button>
+            )}
           </div>
         )}
 
@@ -101,10 +111,12 @@ export function ReadinessPanel({
                   </Link>
                 </Button>
               )}
-              <Button variant="secondary" onClick={onRun}>
-                <RotateCcw className="size-3.5" />
-                Re-run readiness check
-              </Button>
+              {!readOnly && (
+                <Button variant="secondary" onClick={onRun}>
+                  <RotateCcw className="size-3.5" />
+                  Re-run readiness check
+                </Button>
+              )}
             </div>
           </div>
         )}

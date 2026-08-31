@@ -69,9 +69,9 @@ export const researchSynthesisSchema = z.object({
   hasEvidence: z.boolean().describe('True only if real evidence/research notes were supplied in the project context.'),
   disclaimer: z
     .string()
-    .optional()
+    .nullable()
     .describe(
-      'Required and must read "No primary research has been provided. Generated items are hypotheses or assumptions rather than validated findings." when hasEvidence is false.',
+      'Must read exactly "No primary research has been provided. Generated items are hypotheses or assumptions rather than validated findings." when hasEvidence is false, otherwise null.',
     ),
   observations: z.array(synthesisItemSchema).max(6),
   findings: z.array(synthesisItemSchema).max(6),

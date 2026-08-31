@@ -28,12 +28,13 @@ const INSIGHT_FIELDS: RecordFieldSpec<InsightItem>[] = [
 const EMPTY_INSIGHT: InsightItem = { insight: '', evidence: '', relatedUserNeed: '', confidence: 'medium' }
 
 export function InsightsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Insights>('define', 'insights')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Insights>('define', 'insights')
   return (
     <DeliverableCard
       label="Insights"
       description="What we now understand, and what it's based on."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -75,12 +76,13 @@ const USER_NEED_FIELDS: RecordFieldSpec<UserNeedItem>[] = [
 const EMPTY_USER_NEED: UserNeedItem = { user: '', need: '', context: '', importance: 'medium', evidence: '' }
 
 export function UserNeedsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<UserNeeds>('define', 'userNeeds')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<UserNeeds>('define', 'userNeeds')
   return (
     <DeliverableCard
       label="User Needs"
       description="What people need, for whom, and why."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -126,12 +128,13 @@ const PAIN_POINT_FIELDS: RecordFieldSpec<PainPointItem>[] = [
 const EMPTY_PAIN_POINT: PainPointItem = { painPoint: '', user: '', impact: '', evidence: '' }
 
 export function PainPointsCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<PainPoints>('define', 'painPoints')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<PainPoints>('define', 'painPoints')
   return (
     <DeliverableCard
       label="Pain Points"
       description="Where things go wrong for people today."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -164,12 +167,13 @@ export function PainPointsCard() {
 }
 
 export function PersonaCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Persona>('define', 'persona')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<Persona>('define', 'persona')
   return (
     <DeliverableCard
       label="Persona"
       description="A lightweight, evidence-based persona — not a demographic guess."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -240,12 +244,13 @@ const EMPTY_JOURNEY_STAGE: UserJourneyStage = {
 }
 
 export function UserJourneyCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<UserJourney>('define', 'userJourney')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<UserJourney>('define', 'userJourney')
   return (
     <DeliverableCard
       label="User Journey"
       description="How the experience unfolds today, stage by stage."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -284,12 +289,13 @@ export function UserJourneyCard() {
 }
 
 export function ProblemStatementCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ProblemStatement>('define', 'problemStatement')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<ProblemStatement>('define', 'problemStatement')
   return (
     <DeliverableCard
       label="Problem Statement"
       description="A concise, agreed statement of the problem worth solving."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
@@ -329,12 +335,13 @@ export function ProblemStatementCard() {
 }
 
 export function HMWCard() {
-  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<HMW>('define', 'hmw')
+  const { deliverable, generate, accept, updateContent, dismissStale, reasoning } = useDeliverable<HMW>('define', 'hmw')
   return (
     <DeliverableCard
       label="How Might We"
       description="Solution-neutral questions to carry into Ideate."
       deliverable={deliverable}
+      reasoning={reasoning}
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
