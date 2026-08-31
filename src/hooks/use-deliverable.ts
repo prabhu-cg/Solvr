@@ -31,7 +31,11 @@ function writeDeliverable(
  * Every write goes through ProjectRepository (via patchActiveProject) —
  * never touches IndexedDB directly (Section 11).
  */
-export function useDeliverable<T = unknown>(stage: StageKey, localId: string) {
+export function useDeliverable<T = unknown>(
+  stage: StageKey,
+  localId: string,
+  options?: { transformContent?: (raw: unknown) => T },
+) {
   const project = useProjectStore((state) => state.activeProject)
   const patchActiveProject = useProjectStore((state) => state.patchActiveProject)
   const taskId = `${stage}.${localId}` as AITaskId
@@ -61,10 +65,11 @@ export function useDeliverable<T = unknown>(stage: StageKey, localId: string) {
         })
 
         const result = await aiService.generate({ task: taskId, context, instruction })
+        const content = options?.transformContent ? options.transformContent(result.content) : (result.content as T)
 
         writeDeliverable(patchActiveProject, stage, localId, {
           status: 'reviewing',
-          content: result.content as T,
+          content,
           accepted: false,
           generatedAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -80,7 +85,7 @@ export function useDeliverable<T = unknown>(stage: StageKey, localId: string) {
         })
       }
     },
-    [stage, localId, taskId, patchActiveProject],
+    [stage, localId, taskId, patchActiveProject, options],
   )
 
   const accept = useCallback(() => {

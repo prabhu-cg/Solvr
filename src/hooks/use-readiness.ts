@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react'
 import { buildAIContext } from '@/ai/context'
+import type { CritiqueStage } from '@/services/ai/AIService'
 import { aiService } from '@/services/ai/AIService'
 import { useProjectStore } from '@/store/useProjectStore'
 
 export type ReadinessRunStatus = 'idle' | 'loading' | 'failed'
 
-/** Discover/Define readiness assessment — generation, storage, and the score feeding straight into overall project readiness. */
-export function useReadiness(stage: 'discover' | 'define') {
+/** Discover/Define/Ideate readiness assessment — generation, storage, and the score feeding straight into overall project readiness. */
+export function useReadiness(stage: CritiqueStage) {
   const project = useProjectStore((state) => state.activeProject)
   const patchActiveProject = useProjectStore((state) => state.patchActiveProject)
   const readiness = project?.stages[stage]?.readiness

@@ -158,7 +158,73 @@ export const hmwSchema = z.object({
 export type HMW = z.infer<typeof hmwSchema>
 
 // ---------------------------------------------------------------------------
-// Readiness (shared shape for Discover and Define critique)
+// Ideate
+// ---------------------------------------------------------------------------
+
+export const opportunityItemSchema = z.object({
+  opportunity: z.string(),
+  userNeed: z.string().describe('Which insight, user need, pain point, problem statement or HMW this comes from.'),
+  supportingEvidence: z.string(),
+  potentialImpact: z.string(),
+})
+export const opportunitiesSchema = z.object({ items: z.array(opportunityItemSchema).min(3).max(8) })
+export type OpportunityItem = z.infer<typeof opportunityItemSchema>
+export type Opportunities = z.infer<typeof opportunitiesSchema>
+
+export const conceptSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  userValue: z.string().describe('What this concept gives the user.'),
+  businessValue: z.string().describe('What this concept gives the business.'),
+  keyFunctionality: z.array(z.string()).min(2).max(6),
+  advantages: z.array(z.string()).min(1).max(5),
+  risks: z.array(z.string()).min(1).max(5),
+  dependencies: z.array(z.string()).max(5),
+  openQuestions: z.array(z.string()).max(5),
+  supportingEvidence: z.string().describe('Which opportunities/insights this concept responds to.'),
+  keyAssumptions: z.array(z.string()).min(1).max(5),
+})
+export const conceptsSchema = z.object({
+  items: z
+    .array(conceptSchema)
+    .min(3)
+    .max(5)
+    .describe('3-5 genuinely different approaches — never superficial variations of the same idea.'),
+})
+export type Concept = z.infer<typeof conceptSchema>
+export type Concepts = z.infer<typeof conceptsSchema>
+/** Concepts are given a stable client-side id once generated, so selection survives edits/regeneration of other fields. */
+export type ConceptWithId = Concept & { id: string }
+export interface ConceptsWithIds {
+  items: ConceptWithId[]
+}
+
+export const prioritisationItemSchema = z.object({
+  conceptName: z.string(),
+  userValue: z.number().min(1).max(10),
+  businessValue: z.number().min(1).max(10),
+  feasibility: z.number().min(1).max(10),
+  complexityRisk: z.number().min(1).max(10).describe('Higher number = more complex/risky.'),
+  reasoning: z.string().describe('Why these scores — the reasoning a user can inspect.'),
+})
+export const prioritisationSchema = z.object({
+  items: z.array(prioritisationItemSchema).min(3).max(5),
+})
+export type PrioritisationItem = z.infer<typeof prioritisationItemSchema>
+export type Prioritisation = z.infer<typeof prioritisationSchema>
+
+export const recommendationSchema = z.object({
+  recommendedConceptName: z.string(),
+  reasoning: z.string(),
+  evidenceSupporting: z.array(z.string()).min(1).max(6),
+  assumptions: z.array(z.string()).min(1).max(6),
+  risks: z.array(z.string()).min(1).max(6),
+  openQuestions: z.array(z.string()).max(6),
+})
+export type Recommendation = z.infer<typeof recommendationSchema>
+
+// ---------------------------------------------------------------------------
+// Readiness (shared shape for Discover, Define and Ideate critique)
 // ---------------------------------------------------------------------------
 
 export const readinessResultSchema = z.object({

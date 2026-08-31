@@ -8,13 +8,13 @@ interface ContextPanelProps {
 }
 
 /**
- * Live guidance for Discover/Define once a readiness check has run; a
- * placeholder everywhere else (Project Setup, Ideate, Solution) where no AI
+ * Live guidance for Discover/Define/Ideate once a readiness check has run;
+ * a placeholder everywhere else (Project Setup, Solution) where no AI
  * assessment exists yet.
  */
 export function ContextPanel({ project, stage }: ContextPanelProps) {
   const stageLabel = stage === 'setup' ? 'Project Setup' : STAGE_LABELS[stage]
-  const readiness = stage === 'discover' || stage === 'define' ? project.stages[stage].readiness : undefined
+  const readiness = stage !== 'setup' ? project.stages[stage].readiness : undefined
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-5">

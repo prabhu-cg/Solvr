@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { DefinePage } from '@/pages/define-page'
 import { DiscoverPage } from '@/pages/discover-page'
+import { IdeatePage } from '@/pages/ideate-page'
 import { MarketingPage } from '@/pages/marketing-page'
 import { ProjectSetupPage } from '@/pages/project-setup-page'
 import { ProjectWorkspaceLayout } from '@/pages/project-workspace-layout'
@@ -20,7 +21,7 @@ function App() {
         <Route path="setup" element={<ProjectSetupPage />} />
         <Route path="discover" element={<DiscoverPage />} />
         <Route path="define" element={<DefinePage />} />
-        <Route path="ideate" element={<StagePlaceholderPage stage="ideate" />} />
+        <Route path="ideate" element={<IdeatePage />} />
         <Route path="solution" element={<StagePlaceholderPage stage="solution" />} />
         <Route path="*" element={<Navigate to="setup" replace />} />
       </Route>

@@ -2,13 +2,17 @@ import type { z } from 'zod'
 import type { AIProjectContext } from './context'
 import {
   assumptionsSchema,
+  conceptsSchema,
   hmwSchema,
   insightsSchema,
   interviewQuestionsSchema,
+  opportunitiesSchema,
   painPointsSchema,
   personaSchema,
+  prioritisationSchema,
   problemStatementSchema,
   readinessResultSchema,
+  recommendationSchema,
   researchPlanSchema,
   researchSynthesisSchema,
   surveyQuestionsSchema,
@@ -33,7 +37,12 @@ export type DefineTaskLocalId =
   | 'problemStatement'
   | 'hmw'
 
-export type AITaskId = `discover.${DiscoverTaskLocalId}` | `define.${DefineTaskLocalId}`
+export type IdeateTaskLocalId = 'opportunities' | 'concepts' | 'prioritisation' | 'recommendation'
+
+export type AITaskId =
+  | `discover.${DiscoverTaskLocalId}`
+  | `define.${DefineTaskLocalId}`
+  | `ideate.${IdeateTaskLocalId}`
 
 export interface AITaskDefinition<T = unknown> {
   id: AITaskId
@@ -49,7 +58,7 @@ export interface AITaskDefinition<T = unknown> {
  * task's specific instruction so it can't be dropped by accident.
  * (Section 3, 5: structured output, never fabricate research.)
  */
-export const AI_SYSTEM_PROMPT = `You are Solvr's Discover/Define engine — an evidence-aware UX research and product-definition partner embedded in a structured design tool.
+export const AI_SYSTEM_PROMPT = `You are Solvr's Discover/Define/Ideate engine — an evidence-aware product design partner embedded in a structured design tool.
 
 Always follow these rules:
 - Never invent interviews, participants, direct quotes, statistics, or research results that were not supplied in the project context.
@@ -57,7 +66,9 @@ Always follow these rules:
 - When asked to tag content by type, use exactly: "evidence" only for information directly supplied by the user, "assumption" for an unverified belief, "inference" for a conclusion you drew from the available information, "recommendation" for a suggestion you are making.
 - Be concrete and specific to this project. Avoid generic output that could apply to any project.
 - Keep language plain, neutral and non-leading — especially in interview/survey questions.
-- Do not invent demographics, frequencies, or statistics that were not supplied.
+- Do not invent demographics, frequencies, market sizes, or statistics that were not supplied.
+- When generating multiple concepts, make them genuinely different approaches, not superficial variations of the same idea — vary the underlying mechanism, not just the wording.
+- Any numeric score you produce is your own assessment, not a measurement — never imply it came from real data unless it did.
 - Respond only with the structured object requested — no extra commentary.`
 
 function describeContext(context: AIProjectContext): string {
@@ -209,13 +220,51 @@ export const AI_TASKS: Record<AITaskId, AITaskDefinition> = {
     taskInstruction:
       'Produce 3-5 solution-neutral "How might we" questions arising from the problem statement and insights. Recommend the single strongest one and explain why.',
   },
+  'ideate.opportunities': {
+    id: 'ideate.opportunities',
+    stage: 'ideate',
+    localId: 'opportunities',
+    label: 'Opportunities',
+    schema: opportunitiesSchema,
+    taskInstruction:
+      'Generate 3-8 opportunities drawn from the accepted insights, user needs, pain points, problem statement and How Might We questions from Define. For each: the opportunity itself, which user need it responds to, the supporting evidence, and its potential impact. Do not jump to solutions yet — these are opportunity areas, not concepts.',
+  },
+  'ideate.concepts': {
+    id: 'ideate.concepts',
+    stage: 'ideate',
+    localId: 'concepts',
+    label: 'Concepts',
+    schema: conceptsSchema,
+    taskInstruction:
+      'Generate 3-5 substantially different solution concepts responding to the accepted opportunities. Each must take a genuinely different approach — do not produce superficial variations of the same idea. For each concept: name, description, user value, business value, key functionality, advantages, risks, dependencies, open questions, supporting evidence (which opportunities/insights it responds to), and key assumptions.',
+  },
+  'ideate.prioritisation': {
+    id: 'ideate.prioritisation',
+    stage: 'ideate',
+    localId: 'prioritisation',
+    label: 'Prioritisation',
+    schema: prioritisationSchema,
+    taskInstruction:
+      'Score every concept generated so far on: user value, business value, feasibility, and complexity/risk (1-10 each, complexity/risk where higher means more complex or risky). For each concept, give a short reasoning statement covering all four scores so the user can see exactly why it was scored that way. These are your own assessments, not measurements from real data.',
+  },
+  'ideate.recommendation': {
+    id: 'ideate.recommendation',
+    stage: 'ideate',
+    localId: 'recommendation',
+    label: 'Recommendation',
+    schema: recommendationSchema,
+    taskInstruction:
+      'Recommend exactly one concept from those generated so far (recommendedConceptName must match a concept name exactly). Explain the reasoning, referencing the prioritisation scores and evidence. List the evidence supporting it, the key assumptions it rests on, its risks, and open questions still to resolve before committing further.',
+  },
 }
 
-export const READINESS_TASK_INSTRUCTION: Record<'discover' | 'define', string> = {
+export const READINESS_TASK_INSTRUCTION: Record<'discover' | 'define' | 'ideate', string> = {
   discover:
     'Assess this project\'s Discover-stage readiness. Evaluate: problem context, target users, research questions, evidence, assumptions, and research gaps. Give a 0-100 score, strengths, gaps, critical unvalidated assumptions, a short recommendation written to the user, and a recommendedAction of "proceed" or "resolve_gaps". Do not hard-block — "resolve_gaps" is a recommendation, not a lock.',
   define:
     'Critique this project\'s Define-stage outputs. Look specifically for: unsupported assumptions, weak evidence, a solution disguised as a problem, missing context, contradictions between outputs, over-generalisation, and a poorly formulated How Might We. Give a 0-100 score, strengths, gaps, critical unvalidated assumptions, a short recommendation, and a recommendedAction of "proceed" or "resolve_gaps".',
+  ideate:
+    'Assess this project\'s Ideate-stage readiness. Evaluate whether: opportunities were identified, multiple genuinely distinct concepts were explored, concepts were compared/scored, risks were identified, assumptions were identified, and a direction was selected. Give a 0-100 score, strengths, gaps, critical unvalidated assumptions, a short recommendation, and a recommendedAction of "proceed" or "resolve_gaps". Do not require certainty or a perfect score — uncertainty at this stage is normal; the score should reflect how well-explored the options are, not how confident the outcome is.',
 }
 
 export const READINESS_SCHEMA = readinessResultSchema

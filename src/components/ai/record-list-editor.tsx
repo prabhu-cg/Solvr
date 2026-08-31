@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { SegmentedControl } from '@/components/ai/segmented-control'
+import { StringListEditor } from '@/components/ai/string-list-editor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,7 +10,7 @@ import { EVIDENCE_TYPE_LABELS, type EvidenceType } from '@/data/models'
 export interface RecordFieldSpec<T> {
   key: keyof T & string
   label: string
-  kind: 'text' | 'textarea' | 'confidence' | 'evidenceType'
+  kind: 'text' | 'textarea' | 'confidence' | 'evidenceType' | 'number' | 'stringList'
 }
 
 interface RecordListEditorProps<T extends Record<string, unknown>> {
@@ -17,7 +18,8 @@ interface RecordListEditorProps<T extends Record<string, unknown>> {
   onChange: (next: T[]) => void
   fields: RecordFieldSpec<T>[]
   itemLabel: string
-  emptyItem: T
+  /** A fresh value for a new item — pass a factory (`() => ({...})`) whenever items need unique ids. */
+  emptyItem: T | (() => T)
 }
 
 const CONFIDENCE_OPTIONS = [
@@ -44,6 +46,10 @@ export function RecordListEditor<T extends Record<string, unknown>>({
 
   function removeAt(index: number) {
     onChange(value.filter((_, i) => i !== index))
+  }
+
+  function addItem() {
+    onChange([...value, typeof emptyItem === 'function' ? (emptyItem as () => T)() : emptyItem])
   }
 
   return (
@@ -86,6 +92,16 @@ export function RecordListEditor<T extends Record<string, unknown>>({
                       onChange={(e) => updateField(index, field.key, e.target.value)}
                     />
                   )}
+                  {field.kind === 'number' && (
+                    <Input
+                      id={fieldId}
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={String(item[field.key] ?? '')}
+                      onChange={(e) => updateField(index, field.key, Number(e.target.value))}
+                    />
+                  )}
                   {field.kind === 'confidence' && (
                     <SegmentedControl
                       aria-label={field.label}
@@ -102,6 +118,13 @@ export function RecordListEditor<T extends Record<string, unknown>>({
                       options={EVIDENCE_TYPE_OPTIONS}
                     />
                   )}
+                  {field.kind === 'stringList' && (
+                    <StringListEditor
+                      value={(item[field.key] as string[] | undefined) ?? []}
+                      onChange={(v) => updateField(index, field.key, v)}
+                      itemLabel={field.label.toLowerCase()}
+                    />
+                  )}
                 </div>
               )
             })}
@@ -109,7 +132,7 @@ export function RecordListEditor<T extends Record<string, unknown>>({
         </div>
       ))}
 
-      <Button type="button" variant="secondary" size="sm" className="self-start" onClick={() => onChange([...value, emptyItem])}>
+      <Button type="button" variant="secondary" size="sm" className="self-start" onClick={addItem}>
         <Plus className="size-3.5" />
         Add {itemLabel.toLowerCase()}
       </Button>

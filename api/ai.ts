@@ -39,7 +39,7 @@ const requestSchema = z.discriminatedUnion('mode', [
   }),
   z.object({
     mode: z.literal('critique'),
-    stage: z.enum(['discover', 'define']),
+    stage: z.enum(['discover', 'define', 'ideate']),
     context: projectContextSchema,
   }),
 ])
@@ -105,8 +105,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       output: Output.object({ schema: READINESS_SCHEMA }),
     })
 
+    const stageLabel = body.stage.charAt(0).toUpperCase() + body.stage.slice(1)
     res.status(200).json({
-      summary: `${body.stage === 'discover' ? 'Discover' : 'Define'} readiness: ${output.score}%`,
+      summary: `${stageLabel} readiness: ${output.score}%`,
       content: output,
     })
   } catch (error) {

@@ -117,6 +117,8 @@ export interface Stage {
   readiness?: ReadinessAssessment
   /** Keyed by the local deliverable id for this stage, e.g. "researchPlan", "persona". */
   content: Record<string, DeliverableState>
+  /** Ideate only: id of the chosen concept within stages.ideate.content.concepts — the source for the Solution stage. */
+  selectedConceptId?: string
   deliverables: StageRecord[]
   assumptions: StageRecord[]
   gaps: StageRecord[]

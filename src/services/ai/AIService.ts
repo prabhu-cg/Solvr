@@ -16,8 +16,10 @@ export interface AIGenerateRequest {
   instruction?: string
 }
 
+export type CritiqueStage = 'discover' | 'define' | 'ideate'
+
 export interface AICritiqueRequest {
-  stage: 'discover' | 'define'
+  stage: CritiqueStage
   context: AIProjectContext
 }
 
@@ -48,7 +50,7 @@ async function postToAI<T>(body: unknown): Promise<AIResult<T>> {
   return payload as AIResult<T>
 }
 
-/** V1 implementation — routes through Solvr's own `/api/ai` endpoint (Vercel AI Gateway server-side). */
+/** V1 implementation — routes through Solvr's own `/api/ai` endpoint (model call happens server-side). */
 export class GatewayAIService implements AIService {
   async generate(request: AIGenerateRequest): Promise<AIResult> {
     return postToAI({

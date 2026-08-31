@@ -22,7 +22,7 @@ export function StagePlaceholderPage({ stage }: StagePlaceholderPageProps) {
             <h2 className="text-base font-bold text-foreground">Coming in a later phase</h2>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
               {STAGE_LABELS[stage]} isn’t available yet. Solvr currently covers Project Setup,
-              Discover and Define — this stage arrives in a later phase.
+              Discover, Define and Ideate — this stage arrives in a later phase.
             </p>
           </CardContent>
         </Card>
