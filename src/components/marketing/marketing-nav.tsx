@@ -6,9 +6,9 @@ import { Container } from '@/components/marketing/container'
 import { Button } from '@/components/ui/button'
 
 const NAV_LINKS = [
-  { label: 'How it works', href: '#how-it-works' },
   { label: 'Design Process', href: '#process' },
   { label: 'Features', href: '#features' },
+  { label: 'How it works', href: '#how-it-works' },
   { label: 'FAQ', href: '#faq' },
 ]
 

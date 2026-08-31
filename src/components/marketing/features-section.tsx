@@ -1,7 +1,12 @@
-import { Compass, GitCompareArrows, ShieldCheck, SplitSquareHorizontal, Waypoints } from 'lucide-react'
+import { Compass, GitCompareArrows, ShieldCheck, Sparkles, SplitSquareHorizontal, Waypoints } from 'lucide-react'
 import { Container } from '@/components/marketing/container'
 
 const FEATURES = [
+  {
+    icon: Sparkles,
+    title: 'AI at every step',
+    description: 'Every stage is backed by AI that drafts, critiques and scores readiness — not just a single generate button.',
+  },
   {
     icon: Compass,
     title: 'Guided process',

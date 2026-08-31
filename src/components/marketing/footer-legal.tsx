@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 const TRIGGER_CLASS = 'text-sm text-muted-foreground transition-colors hover:text-foreground'
+const LINK_CLASS = 'font-medium text-primary-text underline underline-offset-4'
 
 function LegalDialog({
   trigger,
@@ -20,15 +21,15 @@ function LegalDialog({
   return (
     <Dialog>
       <DialogTrigger className={TRIGGER_CLASS}>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto">
-        <div className="flex items-start justify-between gap-3 border-b border-border pb-4 pr-6">
-          <div>
-            <DialogTitle className="text-base font-bold text-foreground">{title}</DialogTitle>
-            {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
-          </div>
-          {badge}
+      <DialogContent className="flex max-h-[85vh] max-w-2xl flex-col overflow-hidden p-0">
+        <div className="border-b border-border px-6 py-4 pr-12">
+          <DialogTitle className="text-base font-bold text-foreground">{title}</DialogTitle>
+          {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
+          {badge && <div className="mt-2">{badge}</div>}
         </div>
-        <div className="flex flex-col gap-5 pt-4 text-sm leading-relaxed text-muted-foreground">{children}</div>
+        <div className="flex min-h-0 flex-col gap-5 overflow-y-auto px-6 py-5 text-sm leading-relaxed text-muted-foreground">
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   )
@@ -86,6 +87,40 @@ export function AboutDialog() {
           <Field label="Storage">Dexie / IndexedDB, browser-local</Field>
           <Field label="AI">A Vercel serverless function calling Groq via the AI SDK</Field>
         </div>
+        <p className="mt-1">
+          The source is public at{' '}
+          <a href="https://github.com/prabhu-cg/Solvr" target="_blank" rel="noreferrer" className={LINK_CLASS}>
+            github.com/prabhu-cg/Solvr
+          </a>
+          .
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <H>Who built this</H>
+        <p>
+          Solvr is an independent side project by{' '}
+          <a href="https://prabhuraja.vercel.app/" target="_blank" rel="noreferrer" className={LINK_CLASS}>
+            Prabhu Raja
+          </a>
+          , a product designer with 15+ years across enterprise and B2B software — currently VP of User Experience
+          at BNY, previously at Thomson Reuters HighQ, Sweepr, and Marston Holdings. Day to day, that work centres
+          on design systems, accessibility, and turning ambiguous, high-stakes workflows into clear, systemised
+          outcomes.
+        </p>
+        <p>
+          Solvr grew out of that same instinct: most product problems don&rsquo;t fail from a lack of effort, they
+          fail from skipping the thinking a proper design process would have forced. It&rsquo;s a small, focused
+          tool for doing that thinking anyway — five guided stages, AI keeping you honest, and a readiness score
+          that names what&rsquo;s still missing.
+        </p>
+        <p>
+          Feedback, feature requests, or just want to say hello —{' '}
+          <a href="mailto:prabhu_cg@proton.me" className={LINK_CLASS}>
+            prabhu_cg@proton.me
+          </a>
+          .
+        </p>
       </div>
     </LegalDialog>
   )

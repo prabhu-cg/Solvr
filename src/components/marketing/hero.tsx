@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Container } from '@/components/marketing/container'
+import { LaptopMockup } from '@/components/marketing/laptop-mockup'
 import { Button } from '@/components/ui/button'
 
 export function Hero() {
@@ -34,20 +35,17 @@ export function Hero() {
               </Link>
             </Button>
             <Button size="lg" variant="secondary" asChild>
-              <a href="#how-it-works">See how it works</a>
+              <a href="#process">See how it works</a>
             </Button>
           </div>
         </div>
 
-        <div className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-xl border border-border shadow-lg">
-          <img
-            src="/app-screenshot.jpg"
-            alt="The Solvr workspace showing a Discover-stage readiness check, with strengths, gaps and critical assumptions surfaced for a project."
-            className="block w-full"
-            width={1469}
-            height={812}
-          />
-        </div>
+        <LaptopMockup
+          src="/app-screenshot.jpg"
+          alt="The Solvr workspace showing a Discover-stage readiness check, with strengths, gaps and critical assumptions surfaced for a project."
+          width={1469}
+          height={812}
+        />
       </Container>
     </section>
   )
