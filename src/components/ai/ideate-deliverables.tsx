@@ -26,7 +26,7 @@ const EMPTY_OPPORTUNITY: OpportunityItem = {
 }
 
 export function OpportunitiesCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Opportunities>('ideate', 'opportunities')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Opportunities>('ideate', 'opportunities')
   return (
     <DeliverableCard
       label="Opportunities"
@@ -35,6 +35,7 @@ export function OpportunitiesCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item, i) => (
@@ -98,7 +99,7 @@ function withStableIds(raw: { items: Concept[] }): ConceptsWithIds {
 }
 
 export function ConceptsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<ConceptsWithIds>('ideate', 'concepts', {
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ConceptsWithIds>('ideate', 'concepts', {
     transformContent: (raw) => withStableIds(raw as { items: Concept[] }),
   })
   return (
@@ -109,6 +110,7 @@ export function ConceptsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item) => (
@@ -163,7 +165,7 @@ const EMPTY_PRIORITISATION_ITEM: PrioritisationItem = {
 }
 
 export function PrioritisationCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Prioritisation>('ideate', 'prioritisation')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Prioritisation>('ideate', 'prioritisation')
   return (
     <DeliverableCard
       label="Prioritisation"
@@ -172,6 +174,7 @@ export function PrioritisationCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-3">
           <p className="text-xs italic text-muted-foreground">

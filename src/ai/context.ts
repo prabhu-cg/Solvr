@@ -24,6 +24,8 @@ export interface AIProjectContext {
   currentStageDeliverables: Record<string, unknown>
   knownGaps: string[]
   knownAssumptions: string[]
+  /** The concept chosen in Ideate (via selectedConceptId), called out explicitly so Solution builds on THAT concept — not just whichever ones happen to be in priorAcceptedDeliverables. */
+  selectedConcept?: unknown
 }
 
 export function buildAIContext(project: Project, stage: StageKey): AIProjectContext {
@@ -48,6 +50,12 @@ export function buildAIContext(project: Project, stage: StageKey): AIProjectCont
     }
   }
 
+  const selectedConceptId = project.stages.ideate.selectedConceptId
+  const conceptsContent = project.stages.ideate.content.concepts?.content as { items?: { id?: string }[] } | undefined
+  const selectedConcept = selectedConceptId
+    ? conceptsContent?.items?.find((item) => item.id === selectedConceptId)
+    : undefined
+
   return {
     project: {
       name: project.name,
@@ -63,5 +71,6 @@ export function buildAIContext(project: Project, stage: StageKey): AIProjectCont
     currentStageDeliverables,
     knownGaps: currentStageData.readiness?.gaps ?? [],
     knownAssumptions: currentStageData.readiness?.criticalAssumptions ?? [],
+    selectedConcept,
   }
 }

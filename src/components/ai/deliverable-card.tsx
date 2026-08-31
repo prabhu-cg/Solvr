@@ -1,4 +1,4 @@
-import { Check, Pencil, RotateCcw, Sparkles, X } from 'lucide-react'
+import { Check, Pencil, RotateCcw, Sparkles, TriangleAlert, X } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { GenerationStateBadge } from '@/components/ai/generation-state-badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,8 @@ interface DeliverableCardProps<T> {
   renderView: (content: T) => ReactNode
   renderEdit: (content: T, onChange: (next: T) => void) => ReactNode
   onEditChange: (next: T) => void
+  /** Clears the "may be affected" flag without regenerating — the user reviewed it and it's still fine. */
+  onDismissStale?: () => void
 }
 
 export function DeliverableCard<T>({
@@ -33,6 +35,7 @@ export function DeliverableCard<T>({
   renderView,
   renderEdit,
   onEditChange,
+  onDismissStale,
 }: DeliverableCardProps<T>) {
   const [editing, setEditing] = useState(false)
   const [confirmRegenerateOpen, setConfirmRegenerateOpen] = useState(false)
@@ -90,6 +93,20 @@ export function DeliverableCard<T>({
               <RotateCcw className="size-3.5" />
               Retry
             </Button>
+          </div>
+        )}
+
+        {!isBusy && hasContent && deliverable.possiblyStale && (
+          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-warning-soft bg-warning-soft p-3">
+            <TriangleAlert className="size-4 shrink-0 text-warning" aria-hidden />
+            <p className="flex-1 text-sm font-medium text-warning">
+              An earlier-stage edit may affect this output. Review it, then regenerate if needed.
+            </p>
+            {onDismissStale && (
+              <Button variant="secondary" size="sm" onClick={onDismissStale}>
+                Still fine — dismiss
+              </Button>
+            )}
           </div>
         )}
 

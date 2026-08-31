@@ -16,12 +16,17 @@ interface ProjectStoreState {
   clearActiveProject: () => void
   createProject: (input: NewProjectInput) => Promise<Project>
   patchActiveProject: (patch: Partial<Omit<Project, 'id' | 'createdAt'>>) => void
+  flushActiveProjectSave: () => void
   deleteProject: (id: string) => Promise<void>
 }
 
 const AUTOSAVE_DELAY_MS = 700
 
 let autosaveTimer: ReturnType<typeof setTimeout> | null = null
+// Mirrors what the pending timer would save, so a flush (e.g. before the tab
+// closes) can write it immediately instead of losing it when the timer never
+// gets to fire.
+let pendingSave: { projectId: string; patch: Partial<Omit<Project, 'id' | 'createdAt'>> } | null = null
 
 export const useProjectStore = create<ProjectStoreState>((set, get) => ({
   projects: [],
@@ -65,16 +70,34 @@ export const useProjectStore = create<ProjectStoreState>((set, get) => ({
     set({ activeProject: updated, saveStatus: 'saving' })
 
     if (autosaveTimer) clearTimeout(autosaveTimer)
-    autosaveTimer = setTimeout(async () => {
-      const saved = await projectRepository.updateProject(updated.id, patch)
-      // Only overwrite if the user hasn't kept typing into a newer patch.
+    pendingSave = { projectId: updated.id, patch }
+    autosaveTimer = setTimeout(() => {
+      autosaveTimer = null
+      void get().flushActiveProjectSave()
+    }, AUTOSAVE_DELAY_MS)
+  },
+
+  // Writes the pending debounced save immediately. Called by the timer once
+  // it elapses, and also from beforeunload/visibilitychange so a refresh or
+  // tab close inside the debounce window doesn't silently drop the edit.
+  flushActiveProjectSave: () => {
+    if (!pendingSave) return
+    const { projectId, patch } = pendingSave
+    pendingSave = null
+    if (autosaveTimer) {
+      clearTimeout(autosaveTimer)
+      autosaveTimer = null
+    }
+    void (async () => {
+      const saved = await projectRepository.updateProject(projectId, patch)
+      // Only overwrite if the user hasn't kept editing into a newer patch.
       set((state) => ({
         activeProject: state.activeProject?.id === saved.id ? { ...state.activeProject, ...saved } : state.activeProject,
         saveStatus: 'saved',
       }))
       const projects = await projectRepository.listProjects()
       set({ projects })
-    }, AUTOSAVE_DELAY_MS)
+    })()
   },
 
   deleteProject: async (id: string) => {
@@ -86,3 +109,14 @@ export const useProjectStore = create<ProjectStoreState>((set, get) => ({
     }))
   },
 }))
+
+// A refresh, tab close, or tab switch inside the 700ms debounce window would
+// otherwise silently drop the most recent edit — flush on both signals since
+// neither fires reliably on its own across browsers.
+if (typeof window !== 'undefined') {
+  const flush = () => useProjectStore.getState().flushActiveProjectSave()
+  window.addEventListener('beforeunload', flush)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flush()
+  })
+}

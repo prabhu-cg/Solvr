@@ -2,7 +2,14 @@ import { groq } from '@ai-sdk/groq'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { generateText, NoObjectGeneratedError, Output } from 'ai'
 import { z } from 'zod'
-import { buildTaskPrompt, AI_SYSTEM_PROMPT, AI_TASKS, READINESS_SCHEMA, READINESS_TASK_INSTRUCTION } from '../src/ai/tasks.js'
+import {
+  buildTaskPrompt,
+  truncateContextJson,
+  AI_SYSTEM_PROMPT,
+  AI_TASKS,
+  READINESS_SCHEMA,
+  READINESS_TASK_INSTRUCTION,
+} from '../src/ai/tasks.js'
 import type { AIProjectContext } from '../src/ai/context.js'
 
 // Server-only: never exposed to the client. The model/provider is chosen
@@ -28,6 +35,7 @@ const projectContextSchema = z.object({
   currentStageDeliverables: z.record(z.string(), z.unknown()),
   knownGaps: z.array(z.string()),
   knownAssumptions: z.array(z.string()),
+  selectedConcept: z.unknown().optional(),
 })
 
 const requestSchema = z.discriminatedUnion('mode', [
@@ -39,7 +47,7 @@ const requestSchema = z.discriminatedUnion('mode', [
   }),
   z.object({
     mode: z.literal('critique'),
-    stage: z.enum(['discover', 'define', 'ideate']),
+    stage: z.enum(['discover', 'define', 'ideate', 'solution']),
     context: projectContextSchema,
   }),
 ])
@@ -55,9 +63,12 @@ function describeReadinessContext(context: AIProjectContext): string {
   ]
   if (p.constraints) lines.push(`Constraints: ${p.constraints}`)
   lines.push(p.evidence ? `Existing evidence supplied by the user:\n${p.evidence}` : 'No existing evidence was supplied.')
-  lines.push(`This stage's outputs so far (JSON):\n${JSON.stringify(context.currentStageDeliverables)}`)
+  if (context.selectedConcept) {
+    lines.push(`The concept selected to build the solution from (JSON):\n${truncateContextJson(context.selectedConcept)}`)
+  }
+  lines.push(`This stage's outputs so far (JSON):\n${truncateContextJson(context.currentStageDeliverables)}`)
   if (Object.keys(context.priorAcceptedDeliverables).length > 0) {
-    lines.push(`Accepted outputs from earlier stages (JSON):\n${JSON.stringify(context.priorAcceptedDeliverables)}`)
+    lines.push(`Accepted outputs from earlier stages (JSON):\n${truncateContextJson(context.priorAcceptedDeliverables)}`)
   }
   return lines.join('\n')
 }

@@ -224,7 +224,126 @@ export const recommendationSchema = z.object({
 export type Recommendation = z.infer<typeof recommendationSchema>
 
 // ---------------------------------------------------------------------------
-// Readiness (shared shape for Discover, Define and Ideate critique)
+// Solution
+// ---------------------------------------------------------------------------
+
+// A fixed 3-level hierarchy (product area -> section -> page), not an open-ended
+// recursive tree: the spec only ever needs these three named levels, and a truly
+// recursive (z.lazy) schema is unreliable under strict-mode structured output —
+// providers can silently degrade the recursive branch to "any", which in testing
+// caused the model to wrap its entire response in an array instead of an object.
+export const iaPageSchema = z.object({ label: z.string() })
+export const iaSectionSchema = z.object({
+  label: z.string(),
+  pages: z.array(iaPageSchema).min(1).max(8),
+})
+export const iaProductAreaSchema = z.object({
+  label: z.string(),
+  sections: z.array(iaSectionSchema).min(1).max(8),
+})
+export type IAPage = z.infer<typeof iaPageSchema>
+export type IASection = z.infer<typeof iaSectionSchema>
+export type IAProductArea = z.infer<typeof iaProductAreaSchema>
+
+export const informationArchitectureSchema = z.object({
+  tree: z.array(iaProductAreaSchema).min(1).max(6).describe('Root-level product areas, each with sections, each with pages.'),
+  primaryNavigation: z.array(z.string()).min(2).max(8),
+  secondaryNavigation: z.array(z.string()).max(8).describe('Leave empty if there is no meaningful secondary navigation.'),
+})
+export type InformationArchitecture = z.infer<typeof informationArchitectureSchema>
+
+export const flowStepSchema = z.object({
+  step: z.string().describe('A short label for this step.'),
+  type: z.enum(['start', 'action', 'decision', 'screen', 'completion', 'error']),
+  description: z.string(),
+  screen: z.string().describe('Which screen from the screen list this corresponds to. Empty string if none.'),
+  branches: z.array(z.string()).max(4).describe('For a decision step: the possible outcomes. Empty array otherwise.'),
+})
+export const userFlowSchema = z.object({
+  mainPath: z.array(flowStepSchema).min(4).max(14),
+  alternatePaths: z
+    .array(z.object({ name: z.string(), steps: z.array(flowStepSchema).min(1).max(8) }))
+    .max(4)
+    .describe('Realistic alternate routes through the flow.'),
+  errorRecoveryPaths: z
+    .array(
+      z.object({
+        name: z.string(),
+        steps: z
+          .array(flowStepSchema)
+          .min(1)
+          .max(8)
+          .describe('Only the steps from where things go wrong back to safety — do not re-list the whole main path.'),
+      }),
+    )
+    .max(4)
+    .describe('What happens when something goes wrong, and how the user recovers.'),
+})
+export type FlowStep = z.infer<typeof flowStepSchema>
+export type UserFlow = z.infer<typeof userFlowSchema>
+
+export const screenListItemSchema = z.object({
+  screen: z.string(),
+  purpose: z.string(),
+  userGoal: z.string(),
+  primaryAction: z.string(),
+  keyContent: z.string(),
+  flowStep: z.string().describe('Which step of the user flow this screen corresponds to.'),
+})
+export const screenListSchema = z.object({
+  items: z.array(screenListItemSchema).min(3).max(12),
+})
+export type ScreenListItem = z.infer<typeof screenListItemSchema>
+export type ScreenList = z.infer<typeof screenListSchema>
+
+export const wireframeStateSchema = z.enum(['default', 'loading', 'empty', 'error', 'success', 'disabled'])
+export const wireframeSpecSchema = z.object({
+  screen: z.string().describe('Must match a screen name from the screen list.'),
+  purpose: z.string(),
+  layout: z.string().describe('The structural layout — regions/zones and their arrangement, not visual pixels.'),
+  content: z.array(z.string()).min(1).max(8),
+  components: z.array(z.string()).min(1).max(10),
+  interactions: z.array(z.string()).min(1).max(8),
+  relevantStates: z.array(wireframeStateSchema).min(1).max(6).describe('Only the states that actually apply to this screen.'),
+  accessibility: z.array(z.string()).min(1).max(6).describe('Concrete, meaningful accessibility considerations for this screen.'),
+})
+export const wireframeSpecsSchema = z.object({
+  items: z
+    .array(wireframeSpecSchema)
+    .min(1)
+    .max(8)
+    .describe('One spec per primary screen only — not every screen in the list.'),
+})
+export type WireframeSpec = z.infer<typeof wireframeSpecSchema>
+export type WireframeSpecs = z.infer<typeof wireframeSpecsSchema>
+
+export const requirementItemSchema = z.object({
+  requirement: z.string(),
+  userNeed: z.string(),
+  description: z.string(),
+  priority: z.enum(['must', 'should', 'could']),
+  acceptanceCriteria: z.array(z.string()).min(1).max(6),
+  dependencies: z.array(z.string()).max(5),
+  assumptions: z.array(z.string()).max(5),
+})
+export const productRequirementsSchema = z.object({
+  items: z.array(requirementItemSchema).min(5).max(20),
+})
+export type RequirementItem = z.infer<typeof requirementItemSchema>
+export type ProductRequirements = z.infer<typeof productRequirementsSchema>
+
+export const designConfidenceSchema = z.object({
+  problemClarity: z.number().min(0).max(100),
+  evidenceStrength: z.number().min(0).max(100),
+  solutionFit: z.number().min(0).max(100),
+  feasibilityConfidence: z.number().min(0).max(100),
+  validationStatus: z.string().describe('Plain language: what has and has not actually been validated so far.'),
+  summary: z.string(),
+})
+export type DesignConfidence = z.infer<typeof designConfidenceSchema>
+
+// ---------------------------------------------------------------------------
+// Readiness (shared shape for Discover, Define, Ideate and Solution critique)
 // ---------------------------------------------------------------------------
 
 export const readinessResultSchema = z.object({

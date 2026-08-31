@@ -16,7 +16,7 @@ export interface AIGenerateRequest {
   instruction?: string
 }
 
-export type CritiqueStage = 'discover' | 'define' | 'ideate'
+export type CritiqueStage = 'discover' | 'define' | 'ideate' | 'solution'
 
 export interface AICritiqueRequest {
   stage: CritiqueStage

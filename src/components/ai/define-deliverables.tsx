@@ -28,7 +28,7 @@ const INSIGHT_FIELDS: RecordFieldSpec<InsightItem>[] = [
 const EMPTY_INSIGHT: InsightItem = { insight: '', evidence: '', relatedUserNeed: '', confidence: 'medium' }
 
 export function InsightsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Insights>('define', 'insights')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Insights>('define', 'insights')
   return (
     <DeliverableCard
       label="Insights"
@@ -37,6 +37,7 @@ export function InsightsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item, i) => (
@@ -74,7 +75,7 @@ const USER_NEED_FIELDS: RecordFieldSpec<UserNeedItem>[] = [
 const EMPTY_USER_NEED: UserNeedItem = { user: '', need: '', context: '', importance: 'medium', evidence: '' }
 
 export function UserNeedsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<UserNeeds>('define', 'userNeeds')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<UserNeeds>('define', 'userNeeds')
   return (
     <DeliverableCard
       label="User Needs"
@@ -83,6 +84,7 @@ export function UserNeedsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item, i) => (
@@ -124,7 +126,7 @@ const PAIN_POINT_FIELDS: RecordFieldSpec<PainPointItem>[] = [
 const EMPTY_PAIN_POINT: PainPointItem = { painPoint: '', user: '', impact: '', evidence: '' }
 
 export function PainPointsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<PainPoints>('define', 'painPoints')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<PainPoints>('define', 'painPoints')
   return (
     <DeliverableCard
       label="Pain Points"
@@ -133,6 +135,7 @@ export function PainPointsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item, i) => (
@@ -161,7 +164,7 @@ export function PainPointsCard() {
 }
 
 export function PersonaCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Persona>('define', 'persona')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Persona>('define', 'persona')
   return (
     <DeliverableCard
       label="Persona"
@@ -170,6 +173,7 @@ export function PersonaCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           <div>
@@ -236,7 +240,7 @@ const EMPTY_JOURNEY_STAGE: UserJourneyStage = {
 }
 
 export function UserJourneyCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<UserJourney>('define', 'userJourney')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<UserJourney>('define', 'userJourney')
   return (
     <DeliverableCard
       label="User Journey"
@@ -245,6 +249,7 @@ export function UserJourneyCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-3">
           {content.stages.map((stage, i) => (
@@ -279,7 +284,7 @@ export function UserJourneyCard() {
 }
 
 export function ProblemStatementCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<ProblemStatement>('define', 'problemStatement')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ProblemStatement>('define', 'problemStatement')
   return (
     <DeliverableCard
       label="Problem Statement"
@@ -288,6 +293,7 @@ export function ProblemStatementCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           <ViewGrid>
@@ -323,7 +329,7 @@ export function ProblemStatementCard() {
 }
 
 export function HMWCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<HMW>('define', 'hmw')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<HMW>('define', 'hmw')
   return (
     <DeliverableCard
       label="How Might We"
@@ -332,6 +338,7 @@ export function HMWCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           <ul className="flex flex-col gap-2">

@@ -7,7 +7,7 @@ import type { Recommendation } from '@/ai/schemas'
 import { useDeliverable } from '@/hooks/use-deliverable'
 
 export function RecommendationCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Recommendation>('ideate', 'recommendation')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Recommendation>('ideate', 'recommendation')
   return (
     <DeliverableCard
       label="Recommendation"
@@ -16,6 +16,7 @@ export function RecommendationCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           <div className="rounded-lg border border-primary bg-accent p-4">

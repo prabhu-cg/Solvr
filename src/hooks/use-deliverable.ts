@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { buildAIContext } from '@/ai/context'
 import type { AITaskId } from '@/ai/tasks'
-import { createIdleDeliverable, type DeliverableState, type Project, type StageKey } from '@/data/models'
+import { createIdleDeliverable, markDownstreamStale, type DeliverableState, type Project, type StageKey } from '@/data/models'
 import { aiService } from '@/services/ai/AIService'
 import { useProjectStore } from '@/store/useProjectStore'
 
@@ -99,14 +99,37 @@ export function useDeliverable<T = unknown>(
 
   const updateContent = useCallback(
     (content: T) => {
-      writeDeliverable(patchActiveProject, stage, localId, {
-        ...deliverable,
-        content,
-        updatedAt: new Date().toISOString(),
+      const current = useProjectStore.getState().activeProject
+      if (!current) return
+      // Marking downstream stale and writing the edit are bundled into one
+      // patch so they land atomically — never a moment where the edit is
+      // saved but affected later-stage deliverables aren't yet flagged.
+      const stagesWithStaleFlags = markDownstreamStale(current.stages, stage)
+      const currentStageData = stagesWithStaleFlags[stage]
+      patchActiveProject({
+        stages: {
+          ...stagesWithStaleFlags,
+          [stage]: {
+            ...currentStageData,
+            content: {
+              ...currentStageData.content,
+              [localId]: { ...deliverable, content, updatedAt: new Date().toISOString() },
+            },
+          },
+        },
       })
     },
     [deliverable, patchActiveProject, stage, localId],
   )
 
-  return { deliverable, generate, accept, updateContent }
+  /** The user reviewed a "may be affected" flag and decided this output is still fine as-is. */
+  const dismissStale = useCallback(() => {
+    writeDeliverable(patchActiveProject, stage, localId, {
+      ...deliverable,
+      possiblyStale: false,
+      updatedAt: new Date().toISOString(),
+    })
+  }, [deliverable, patchActiveProject, stage, localId])
+
+  return { deliverable, generate, accept, updateContent, dismissStale }
 }

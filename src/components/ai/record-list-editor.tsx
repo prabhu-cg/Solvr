@@ -10,7 +10,7 @@ import { EVIDENCE_TYPE_LABELS, type EvidenceType } from '@/data/models'
 export interface RecordFieldSpec<T> {
   key: keyof T & string
   label: string
-  kind: 'text' | 'textarea' | 'confidence' | 'evidenceType' | 'number' | 'stringList'
+  kind: 'text' | 'textarea' | 'confidence' | 'evidenceType' | 'number' | 'stringList' | 'priority'
 }
 
 interface RecordListEditorProps<T extends Record<string, unknown>> {
@@ -32,6 +32,12 @@ const EVIDENCE_TYPE_OPTIONS = (Object.keys(EVIDENCE_TYPE_LABELS) as EvidenceType
   value: type,
   label: EVIDENCE_TYPE_LABELS[type],
 }))
+
+const PRIORITY_OPTIONS = [
+  { value: 'must', label: 'Must have' },
+  { value: 'should', label: 'Should have' },
+  { value: 'could', label: 'Could have' },
+] as const
 
 export function RecordListEditor<T extends Record<string, unknown>>({
   value,
@@ -116,6 +122,14 @@ export function RecordListEditor<T extends Record<string, unknown>>({
                       value={String(item[field.key] ?? 'inference')}
                       onChange={(v) => updateField(index, field.key, v)}
                       options={EVIDENCE_TYPE_OPTIONS}
+                    />
+                  )}
+                  {field.kind === 'priority' && (
+                    <SegmentedControl
+                      aria-label={field.label}
+                      value={String(item[field.key] ?? 'should')}
+                      onChange={(v) => updateField(index, field.key, v)}
+                      options={[...PRIORITY_OPTIONS]}
                     />
                   )}
                   {field.kind === 'stringList' && (

@@ -10,7 +10,7 @@ import type { EvidenceType } from '@/data/models'
 import { useDeliverable } from '@/hooks/use-deliverable'
 
 export function ResearchPlanCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<ResearchPlan>('discover', 'researchPlan')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ResearchPlan>('discover', 'researchPlan')
   return (
     <DeliverableCard
       label="Research Plan"
@@ -19,6 +19,7 @@ export function ResearchPlanCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <ViewGrid>
           <FieldListView label="Objectives" items={content.objectives} />
@@ -89,7 +90,7 @@ const INTERVIEW_CATEGORIES: { key: keyof InterviewQuestions; label: string }[] =
 ]
 
 export function InterviewQuestionsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<InterviewQuestions>('discover', 'interviewQuestions')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<InterviewQuestions>('discover', 'interviewQuestions')
   return (
     <DeliverableCard
       label="Interview Questions"
@@ -98,6 +99,7 @@ export function InterviewQuestionsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <ViewGrid>
           {INTERVIEW_CATEGORIES.map(({ key, label }) => (
@@ -128,7 +130,7 @@ const SURVEY_CATEGORIES: { key: keyof SurveyQuestions; label: string }[] = [
 ]
 
 export function SurveyQuestionsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<SurveyQuestions>('discover', 'surveyQuestions')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<SurveyQuestions>('discover', 'surveyQuestions')
   return (
     <DeliverableCard
       label="Survey Questions"
@@ -137,6 +139,7 @@ export function SurveyQuestionsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <ViewGrid>
           {SURVEY_CATEGORIES.map(({ key, label }) => (
@@ -174,7 +177,7 @@ const EMPTY_ASSUMPTION: AssumptionItem = {
 }
 
 export function AssumptionsCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<Assumptions>('discover', 'assumptions')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<Assumptions>('discover', 'assumptions')
   return (
     <DeliverableCard
       label="Assumptions"
@@ -183,6 +186,7 @@ export function AssumptionsCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-4">
           {content.items.map((item, i) => (
@@ -236,7 +240,7 @@ function SynthesisSection({ title, items }: { title: string; items: { text: stri
 }
 
 export function ResearchSynthesisCard() {
-  const { deliverable, generate, accept, updateContent } = useDeliverable<ResearchSynthesis>('discover', 'researchSynthesis')
+  const { deliverable, generate, accept, updateContent, dismissStale } = useDeliverable<ResearchSynthesis>('discover', 'researchSynthesis')
   return (
     <DeliverableCard
       label="Research Synthesis"
@@ -245,6 +249,7 @@ export function ResearchSynthesisCard() {
       onGenerate={generate}
       onAccept={accept}
       onEditChange={updateContent}
+      onDismissStale={dismissStale}
       renderView={(content) => (
         <div className="flex flex-col gap-5">
           {!content.hasEvidence && content.disclaimer && (

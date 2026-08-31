@@ -91,6 +91,8 @@ export interface DeliverableState<T = unknown> {
   content?: T
   /** Set once the user has explicitly accepted this deliverable — see Section 9/2. */
   accepted?: boolean
+  /** Set when an earlier-stage output this may depend on was edited after this was generated — surfaced, never auto-resolved (Phase 4, Section 9). */
+  possiblyStale?: boolean
   error?: string
   generatedAt?: string
   updatedAt: string
@@ -180,6 +182,31 @@ function stageRank(stage: ProjectStage): number {
  */
 export function advanceCurrentStage(currentStage: ProjectStage, visitedStage: ProjectStage): ProjectStage {
   return stageRank(visitedStage) > stageRank(currentStage) ? visitedStage : currentStage
+}
+
+/**
+ * Editing an already-generated earlier-stage output never silently
+ * overwrites what was built on top of it — instead every later-stage
+ * deliverable that already has content gets flagged so the user can
+ * decide whether to regenerate it (Section 9: change propagation).
+ */
+export function markDownstreamStale(stages: Record<StageKey, Stage>, editedStage: StageKey): Record<StageKey, Stage> {
+  const editedRank = stageRank(editedStage)
+  const next = { ...stages }
+  for (const key of STAGE_KEYS) {
+    if (stageRank(key) <= editedRank) continue
+    const stage = next[key]
+    let changed = false
+    const content = { ...stage.content }
+    for (const [localId, deliverable] of Object.entries(content)) {
+      if (deliverable.content !== undefined && !deliverable.possiblyStale) {
+        content[localId] = { ...deliverable, possiblyStale: true }
+        changed = true
+      }
+    }
+    if (changed) next[key] = { ...stage, content }
+  }
+  return next
 }
 
 export interface Project {
