@@ -1,0 +1,49 @@
+import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { AppPreview } from '@/components/marketing/app-preview'
+import { Container } from '@/components/marketing/container'
+import { Button } from '@/components/ui/button'
+
+export function Hero() {
+  return (
+    <section className="relative overflow-hidden bg-secondary">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(60%_60%_at_50%_0%,color-mix(in_srgb,var(--color-primary)_10%,transparent),transparent)]"
+      />
+      <Container className="relative py-20 sm:py-28">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+            AI-guided product design
+          </span>
+
+          <h1 className="mt-6 text-balance text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl">
+            Think through. <span className="text-primary-text">Design better.</span>
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
+            Solvr guides you from a product problem to a structured design solution — helping you
+            understand the problem, define the opportunity, explore solutions and turn the
+            strongest direction into a practical product specification.
+          </p>
+
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button size="lg" asChild>
+              <Link to="/app">
+                Start designing — free
+                <ArrowRight />
+              </Link>
+            </Button>
+            <Button size="lg" variant="secondary" asChild>
+              <a href="#how-it-works">See how it works</a>
+            </Button>
+          </div>
+        </div>
+
+        <div className="mx-auto mt-16 max-w-4xl">
+          <AppPreview />
+        </div>
+      </Container>
+    </section>
+  )
+}
