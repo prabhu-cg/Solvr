@@ -1,3 +1,4 @@
+import { FileText, Frown, HelpCircle, Lightbulb, Route, Target, UserRound } from 'lucide-react'
 import { DeliverableCard } from '@/components/ai/deliverable-card'
 import { EditField, EditStack, FieldListView, FieldView, ViewGrid } from '@/components/ai/content-views'
 import { type RecordFieldSpec, RecordListEditor } from '@/components/ai/record-list-editor'
@@ -33,6 +34,7 @@ export function InsightsCard() {
     <DeliverableCard
       label="Insights"
       description="What we now understand, and what it's based on."
+      icon={Lightbulb}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -81,6 +83,7 @@ export function UserNeedsCard() {
     <DeliverableCard
       label="User Needs"
       description="What people need, for whom, and why."
+      icon={Target}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -133,6 +136,7 @@ export function PainPointsCard() {
     <DeliverableCard
       label="Pain Points"
       description="Where things go wrong for people today."
+      icon={Frown}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -172,6 +176,7 @@ export function PersonaCard() {
     <DeliverableCard
       label="Persona"
       description="A lightweight, evidence-based persona — not a demographic guess."
+      icon={UserRound}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -249,6 +254,7 @@ export function UserJourneyCard() {
     <DeliverableCard
       label="User Journey"
       description="How the experience unfolds today, stage by stage."
+      icon={Route}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -294,6 +300,7 @@ export function ProblemStatementCard() {
     <DeliverableCard
       label="Problem Statement"
       description="A concise, agreed statement of the problem worth solving."
+      icon={FileText}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -340,6 +347,7 @@ export function HMWCard() {
     <DeliverableCard
       label="How Might We"
       description="Solution-neutral questions to carry into Ideate."
+      icon={HelpCircle}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}

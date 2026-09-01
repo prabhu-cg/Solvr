@@ -1,3 +1,4 @@
+import { Crosshair, FileText, Frown, HelpCircle, Lightbulb, Route, Target, UserRound } from 'lucide-react'
 import { useOutletContext } from 'react-router-dom'
 import {
   HMWCard,
@@ -10,9 +11,20 @@ import {
 } from '@/components/ai/define-deliverables'
 import { ReadinessPanel } from '@/components/ai/readiness-panel'
 import { StageHeader } from '@/components/app/stage-header'
+import { type JourneyStep, StageJourneyRibbon } from '@/components/app/stage-journey-ribbon'
 import { computeStageStatus, PROJECT_STAGE_ORDER, STAGE_DESCRIPTIONS } from '@/data/models'
 import { useReadiness } from '@/hooks/use-readiness'
 import type { ProjectOutletContext } from '@/pages/project-workspace-layout'
+
+const DEFINE_STEPS: JourneyStep[] = [
+  { key: 'insights', label: 'Insights', icon: Lightbulb, anchor: 'insights' },
+  { key: 'userNeeds', label: 'User Needs', icon: Target, anchor: 'user-needs' },
+  { key: 'painPoints', label: 'Pain Points', icon: Frown, anchor: 'pain-points' },
+  { key: 'persona', label: 'Persona', icon: UserRound, anchor: 'persona' },
+  { key: 'userJourney', label: 'Journey', icon: Route, anchor: 'user-journey' },
+  { key: 'problemStatement', label: 'Problem', icon: FileText, anchor: 'problem-statement' },
+  { key: 'hmw', label: 'How Might We', icon: HelpCircle, anchor: 'hmw' },
+]
 
 export function DefinePage() {
   const { project } = useOutletContext<ProjectOutletContext>()
@@ -28,9 +40,12 @@ export function DefinePage() {
         description={STAGE_DESCRIPTIONS.define}
         status={status}
         readiness={project.stages.define.readinessScore}
+        icon={Crosshair}
       />
 
-      <div className="flex flex-col gap-6 px-6 py-8 sm:px-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-8 sm:px-8">
+        <StageJourneyRibbon steps={DEFINE_STEPS} content={project.stages.define.content} />
+
         <ReadinessPanel
           stageLabel="Define"
           readiness={readinessHook.readiness}
@@ -42,13 +57,27 @@ export function DefinePage() {
           nextStageLabel="Ideate"
         />
 
-        <InsightsCard />
-        <UserNeedsCard />
-        <PainPointsCard />
-        <PersonaCard />
-        <UserJourneyCard />
-        <ProblemStatementCard />
-        <HMWCard />
+        <div id="insights">
+          <InsightsCard />
+        </div>
+        <div id="user-needs">
+          <UserNeedsCard />
+        </div>
+        <div id="pain-points">
+          <PainPointsCard />
+        </div>
+        <div id="persona">
+          <PersonaCard />
+        </div>
+        <div id="user-journey">
+          <UserJourneyCard />
+        </div>
+        <div id="problem-statement">
+          <ProblemStatementCard />
+        </div>
+        <div id="hmw">
+          <HMWCard />
+        </div>
       </div>
     </div>
   )

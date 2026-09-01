@@ -2,6 +2,7 @@ import { Check, Pencil, RotateCcw, Sparkles, TriangleAlert, X } from 'lucide-rea
 import { type ReactNode, useState } from 'react'
 import { GenerationStateBadge } from '@/components/ai/generation-state-badge'
 import { ReasoningStream } from '@/components/ai/reasoning-stream'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -18,6 +19,8 @@ import { useProjectStore } from '@/store/useProjectStore'
 interface DeliverableCardProps<T> {
   label: string
   description: string
+  /** Small identifying glyph shown in the header badge — makes each deliverable recognizable at a glance. */
+  icon?: typeof Sparkles
   deliverable: DeliverableState<T>
   onGenerate: () => Promise<void>
   onAccept: () => void
@@ -33,6 +36,7 @@ interface DeliverableCardProps<T> {
 export function DeliverableCard<T>({
   label,
   description,
+  icon: Icon = Sparkles,
   deliverable,
   onGenerate,
   onAccept,
@@ -66,20 +70,28 @@ export function DeliverableCard<T>({
   }
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
-        <div>
-          <CardTitle>{label}</CardTitle>
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+            <Icon className="size-4.5" aria-hidden />
+          </span>
+          <div>
+            <CardTitle>{label}</CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          </div>
         </div>
         <GenerationStateBadge status={deliverable.status} className="mt-0.5 shrink-0" />
       </CardHeader>
 
       <CardContent>
         {deliverable.status === 'idle' && (
-          <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border-strong p-5">
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border-strong bg-muted/40 p-6 text-center">
+            <span className="flex size-10 items-center justify-center rounded-full bg-card text-muted-foreground shadow-xs">
+              <Icon className="size-5" aria-hidden />
+            </span>
             <p className="text-sm text-muted-foreground">
-              {readOnly ? 'Nothing generated.' : 'Nothing generated yet.'}
+              {readOnly ? 'Nothing generated.' : `Generate ${label.toLowerCase()} from what you've entered so far.`}
             </p>
             {!readOnly && (
               <Button onClick={handleGenerateClick}>
@@ -147,10 +159,10 @@ export function DeliverableCard<T>({
                 </Button>
               )}
               {deliverable.accepted && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-success">
+                <Badge variant="success">
                   <Check className="size-3.5" />
                   Accepted
-                </span>
+                </Badge>
               )}
             </div>
 

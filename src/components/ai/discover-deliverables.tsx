@@ -1,4 +1,6 @@
+import { ClipboardList, Compass, Eye, Layers, Lightbulb, MessagesSquare, Search, TriangleAlert } from 'lucide-react'
 import { DeliverableCard } from '@/components/ai/deliverable-card'
+import { Badge } from '@/components/ui/badge'
 import { EditField, EditStack, FieldListView, FieldView, ViewGrid } from '@/components/ai/content-views'
 import { EvidenceBadge } from '@/components/ai/evidence-badge'
 import { type RecordFieldSpec, RecordListEditor } from '@/components/ai/record-list-editor'
@@ -15,6 +17,7 @@ export function ResearchPlanCard() {
     <DeliverableCard
       label="Research Plan"
       description="What this research needs to establish, and how to go about it."
+      icon={ClipboardList}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -96,6 +99,7 @@ export function InterviewQuestionsCard() {
     <DeliverableCard
       label="Interview Questions"
       description="Neutral, non-leading questions organised by conversation flow."
+      icon={MessagesSquare}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -137,6 +141,7 @@ export function SurveyQuestionsCard() {
     <DeliverableCard
       label="Survey Questions"
       description="Unbiased questions ready to adapt into a survey."
+      icon={Compass}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -163,6 +168,12 @@ export function SurveyQuestionsCard() {
   )
 }
 
+const CONFIDENCE_VARIANT = {
+  high: 'success',
+  medium: 'neutral',
+  low: 'warning',
+} as const
+
 const ASSUMPTION_FIELDS: RecordFieldSpec<AssumptionItem>[] = [
   { key: 'assumption', label: 'Assumption', kind: 'textarea' },
   { key: 'whyItMatters', label: 'Why it matters', kind: 'textarea' },
@@ -185,6 +196,7 @@ export function AssumptionsCard() {
     <DeliverableCard
       label="Assumptions"
       description="What's currently being assumed about this problem, and how confident that is."
+      icon={TriangleAlert}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -192,16 +204,16 @@ export function AssumptionsCard() {
       onEditChange={updateContent}
       onDismissStale={dismissStale}
       renderView={(content) => (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {content.items.map((item, i) => (
             <div key={i} className="rounded-lg border border-border p-4">
-              <div className="mb-2 flex items-center justify-between gap-2">
+              <div className="mb-2 flex items-start justify-between gap-2">
                 <p className="text-sm font-bold text-foreground">{item.assumption}</p>
-                <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-semibold capitalize text-muted-foreground">
+                <Badge variant={CONFIDENCE_VARIANT[item.confidence]} className="shrink-0 capitalize">
                   {item.confidence} confidence
-                </span>
+                </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{item.whyItMatters}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{item.whyItMatters}</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <FieldView label="Potential impact" value={item.potentialImpact} />
                 <FieldView label="How to validate it" value={item.validationApproach} />
@@ -223,16 +235,27 @@ export function AssumptionsCard() {
   )
 }
 
+const SYNTHESIS_SECTION_ICON: Record<string, typeof Eye> = {
+  Observations: Eye,
+  Findings: Search,
+  Themes: Compass,
+  Insights: Lightbulb,
+}
+
 function SynthesisSection({ title, items }: { title: string; items: { text: string; type: EvidenceType }[] }) {
+  const Icon = SYNTHESIS_SECTION_ICON[title] ?? Layers
   return (
-    <div>
-      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">{title}</p>
+    <div className="rounded-lg bg-muted/60 p-3.5">
+      <p className="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <Icon className="size-3.5" aria-hidden />
+        {title}
+      </p>
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">None.</p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2.5">
           {items.map((item, i) => (
-            <li key={i} className="flex flex-wrap items-start gap-2 text-sm text-foreground">
+            <li key={i} className="flex flex-wrap items-start gap-2 text-sm leading-relaxed text-foreground">
               <EvidenceBadge type={item.type} />
               <span className="flex-1">{item.text}</span>
             </li>
@@ -258,6 +281,7 @@ export function ResearchSynthesisCard() {
     <DeliverableCard
       label="Research Synthesis"
       description="Evidence pulled together into observations, findings, themes and insights."
+      icon={Layers}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -265,13 +289,13 @@ export function ResearchSynthesisCard() {
       onEditChange={updateContent}
       onDismissStale={dismissStale}
       renderView={(content) => (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           {!content.hasEvidence && content.disclaimer && (
             <div className="rounded-lg border border-warning-soft bg-warning-soft p-3 text-sm font-medium text-warning">
               {content.disclaimer}
             </div>
           )}
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <SynthesisSection title="Observations" items={content.observations} />
             <SynthesisSection title="Findings" items={content.findings} />
             <SynthesisSection title="Themes" items={content.themes} />

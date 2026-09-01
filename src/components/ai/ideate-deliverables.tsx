@@ -1,3 +1,4 @@
+import { Blocks, ListOrdered, Telescope } from 'lucide-react'
 import { DeliverableCard } from '@/components/ai/deliverable-card'
 import { EditStack, FieldListView, FieldView, ViewGrid } from '@/components/ai/content-views'
 import { type RecordFieldSpec, RecordListEditor } from '@/components/ai/record-list-editor'
@@ -31,6 +32,7 @@ export function OpportunitiesCard() {
     <DeliverableCard
       label="Opportunities"
       description="Opportunity areas drawn from Define — not solutions yet."
+      icon={Telescope}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -107,6 +109,7 @@ export function ConceptsCard() {
     <DeliverableCard
       label="Concepts"
       description="3-5 substantially different approaches — not variations of the same idea."
+      icon={Blocks}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -172,6 +175,7 @@ export function PrioritisationCard() {
     <DeliverableCard
       label="Prioritisation"
       description="Concepts scored for comparison — not objective measurements."
+      icon={ListOrdered}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}

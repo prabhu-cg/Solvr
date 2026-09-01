@@ -89,9 +89,7 @@ export function ProjectWorkspaceLayout() {
         </aside>
 
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-5xl">
-            <Outlet context={{ project: activeProject, patchProject: patchActiveProject } satisfies ProjectOutletContext} />
-          </div>
+          <Outlet context={{ project: activeProject, patchProject: patchActiveProject } satisfies ProjectOutletContext} />
         </main>
 
         <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border bg-card xl:block">

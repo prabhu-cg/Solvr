@@ -36,21 +36,6 @@ export function ReadinessPanel({
     <Card className="border-border-strong">
       <CardHeader className="flex-row items-center justify-between gap-4 space-y-0">
         <CardTitle>{stageLabel} readiness</CardTitle>
-        {readiness && (
-          <span
-            className={cn(
-              'flex items-center gap-1.5 text-lg font-extrabold tabular-nums',
-              readiness.recommendedAction === 'proceed' ? 'text-success' : 'text-warning',
-            )}
-          >
-            {readiness.recommendedAction === 'proceed' ? (
-              <CircleCheck className="size-5" aria-hidden />
-            ) : (
-              <TriangleAlert className="size-5" aria-hidden />
-            )}
-            {readiness.score}%
-          </span>
-        )}
       </CardHeader>
 
       <CardContent>
@@ -89,7 +74,25 @@ export function ReadinessPanel({
 
         {!loading && readiness && (
           <div className="flex flex-col gap-5">
-            <p className="text-sm leading-relaxed text-foreground">{readiness.recommendation}</p>
+            <div className="flex flex-wrap items-center gap-5 rounded-lg bg-muted/60 p-4">
+              <ReadinessGauge score={readiness.score} positive={readiness.recommendedAction === 'proceed'} />
+              <div className="flex-1 min-w-[16rem]">
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider',
+                    readiness.recommendedAction === 'proceed' ? 'text-success' : 'text-warning',
+                  )}
+                >
+                  {readiness.recommendedAction === 'proceed' ? (
+                    <CircleCheck className="size-3.5" aria-hidden />
+                  ) : (
+                    <TriangleAlert className="size-3.5" aria-hidden />
+                  )}
+                  {readiness.recommendedAction === 'proceed' ? 'On track' : 'Needs attention'}
+                </span>
+                <p className="mt-1.5 text-sm leading-relaxed text-foreground">{readiness.recommendation}</p>
+              </div>
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <ReadinessList title="Strengths" items={readiness.strengths} icon={CircleCheck} tone="success" />
@@ -138,20 +141,35 @@ function ReadinessList({
 }) {
   const toneClass = { success: 'text-success', warning: 'text-warning', info: 'text-info' }[tone]
   return (
-    <div>
-      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">{title}</p>
+    <div className="rounded-lg bg-muted/60 p-3.5">
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</p>
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">None noted.</p>
       ) : (
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-2">
           {items.map((item, index) => (
-            <li key={index} className="flex items-start gap-1.5 text-sm text-foreground">
+            <li key={index} className="flex items-start gap-1.5 text-sm leading-relaxed text-foreground">
               <Icon className={cn('mt-0.5 size-3.5 shrink-0', toneClass)} aria-hidden />
               {item}
             </li>
           ))}
         </ul>
       )}
+    </div>
+  )
+}
+
+/** The single most-scanned number on the stage — given a radial treatment so it reads before anything else in the card. */
+function ReadinessGauge({ score, positive }: { score: number; positive: boolean }) {
+  const ringColor = positive ? 'var(--color-success)' : 'var(--color-warning)'
+  return (
+    <div
+      className="relative grid size-20 shrink-0 place-items-center rounded-full"
+      style={{ background: `conic-gradient(${ringColor} ${score * 3.6}deg, var(--color-border) 0deg)` }}
+    >
+      <div className="grid size-[62px] place-items-center rounded-full bg-card">
+        <span className="text-xl font-extrabold tabular-nums text-foreground">{score}%</span>
+      </div>
     </div>
   )
 }

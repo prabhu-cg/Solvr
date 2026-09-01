@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react'
 import { DeliverableCard } from '@/components/ai/deliverable-card'
 import { EditField, EditStack, FieldListView } from '@/components/ai/content-views'
 import { StringListEditor } from '@/components/ai/string-list-editor'
@@ -12,6 +13,7 @@ export function RecommendationCard() {
     <DeliverableCard
       label="Recommendation"
       description="One recommended concept, with the reasoning behind it — you decide whether to follow it."
+      icon={Star}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}

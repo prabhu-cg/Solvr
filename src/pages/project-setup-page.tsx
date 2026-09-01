@@ -30,7 +30,7 @@ export function ProjectSetupPage() {
         readiness={completeness}
       />
 
-      <div className="px-6 py-8 sm:px-8">
+      <div className="mx-auto w-full max-w-5xl px-6 py-8 sm:px-8">
         <div className="max-w-2xl">
           <ProjectSetupForm
             mode="edit"

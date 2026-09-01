@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Frame, LayoutGrid, ListChecks, Network, Workflow } from 'lucide-react'
 import { DeliverableCard } from '@/components/ai/deliverable-card'
 import { EditField, EditStack, FieldListView, FieldView, ViewGrid } from '@/components/ai/content-views'
 import { FlowStepList } from '@/components/ai/user-flow-view'
@@ -28,6 +28,7 @@ export function InformationArchitectureCard() {
     <DeliverableCard
       label="Information Architecture"
       description="Product areas, sections and pages, built on the selected concept."
+      icon={Network}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -85,6 +86,7 @@ export function UserFlowCard() {
     <DeliverableCard
       label="User Flow"
       description="Start to completion, with the decision points and recovery paths along the way."
+      icon={Workflow}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -150,6 +152,7 @@ export function ScreenListCard() {
     <DeliverableCard
       label="Screen List"
       description="Every screen implied by the IA and flow."
+      icon={LayoutGrid}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -226,6 +229,7 @@ export function WireframeSpecsCard() {
     <DeliverableCard
       label="Wireframe Specification"
       description="A structured spec for each primary screen — not a visual wireframe."
+      icon={Frame}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
@@ -314,6 +318,7 @@ export function ProductRequirementsCard() {
     <DeliverableCard
       label="Product Requirements"
       description="Concise, implementation-oriented requirements, grouped by priority."
+      icon={ListChecks}
       deliverable={deliverable}
       reasoning={reasoning}
       onGenerate={generate}
