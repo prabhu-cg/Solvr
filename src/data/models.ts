@@ -7,15 +7,17 @@
  * sees these shapes.
  */
 
-export type StageKey = 'discover' | 'define' | 'ideate' | 'solution'
+export type StageKey = 'discover' | 'define' | 'ideate' | 'solution' | 'validate' | 'iterate'
 
-export const STAGE_KEYS: StageKey[] = ['discover', 'define', 'ideate', 'solution']
+export const STAGE_KEYS: StageKey[] = ['discover', 'define', 'ideate', 'solution', 'validate', 'iterate']
 
 export const STAGE_LABELS: Record<StageKey, string> = {
   discover: 'Discover',
   define: 'Define',
   ideate: 'Ideate',
   solution: 'Solution',
+  validate: 'Validate',
+  iterate: 'Iterate',
 }
 
 export const STAGE_ORDER_NUMBER: Record<StageKey, string> = {
@@ -23,6 +25,8 @@ export const STAGE_ORDER_NUMBER: Record<StageKey, string> = {
   define: '02',
   ideate: '03',
   solution: '04',
+  validate: '06',
+  iterate: '07',
 }
 
 export const STAGE_DESCRIPTIONS: Record<StageKey, string> = {
@@ -30,6 +34,8 @@ export const STAGE_DESCRIPTIONS: Record<StageKey, string> = {
   define: 'Turn what you discovered into a sharp, agreed opportunity worth solving.',
   ideate: 'Explore and compare multiple solution concepts before committing to one.',
   solution: 'Develop the strongest direction into a practical, structured specification.',
+  validate: 'Test assumptions and prepare for validation.',
+  iterate: 'Improve the solution based on validated findings.',
 }
 
 /**
@@ -83,6 +89,80 @@ export const EVIDENCE_TYPE_DESCRIPTIONS: Record<EvidenceType, string> = {
   recommendation: 'A suggestion for what to do next.',
 }
 
+/**
+ * Manually captured evidence from testing conducted outside Solvr (Validate
+ * stage, V2.2). Distinct from `EvidenceType` above — that tags how a piece
+ * of AI-touched content was arrived at; this tags what kind of real-world
+ * input the user is recording.
+ */
+export type ValidationEvidenceType = 'observation' | 'feedback' | 'issue' | 'finding'
+
+export const VALIDATION_EVIDENCE_TYPE_LABELS: Record<ValidationEvidenceType, string> = {
+  observation: 'Observation',
+  feedback: 'Feedback',
+  issue: 'Issue',
+  finding: 'Finding',
+}
+
+export const VALIDATION_EVIDENCE_TYPE_DESCRIPTIONS: Record<ValidationEvidenceType, string> = {
+  observation: 'Something observed during testing.',
+  feedback: 'Something a user or stakeholder said.',
+  issue: 'A problem identified during testing or review.',
+  finding: 'A manually identified research finding.',
+}
+
+/** Shared severity scale — used on evidence items, prioritised issues, and findings alike. */
+export type EvidenceSeverity = 'critical' | 'high' | 'medium' | 'low'
+
+export const EVIDENCE_SEVERITY_LABELS: Record<EvidenceSeverity, string> = {
+  critical: 'Critical',
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+}
+
+/**
+ * One manually entered piece of validation evidence. Fields are a superset
+ * across the four types (Section 5) rather than four separate shapes —
+ * which ones are shown/required is driven by `type` in the UI, not the
+ * data model. Never AI-generated; this is the user's own record of what
+ * happened during testing outside Solvr.
+ */
+export interface ValidationEvidenceItem {
+  id: string
+  type: ValidationEvidenceType
+  title: string
+  /** The observation/issue/finding description, or the feedback quote itself. */
+  description: string
+  context?: string
+  /** Observation/feedback: "related task". Issue: "related task or screen". Not used for findings. */
+  relatedTask?: string
+  /** Observation/feedback only. */
+  notes?: string
+  /** Issue/finding only. */
+  severity?: EvidenceSeverity
+  /** Finding only. */
+  supportingEvidence?: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** Review status of a generated finding (Section 18-19) — never auto-accepted; the user decides. */
+export type FindingStatus = 'draft' | 'accepted' | 'rejected'
+
+export const FINDING_STATUS_LABELS: Record<FindingStatus, string> = {
+  draft: 'Draft',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+}
+
+/**
+ * Iterate proposals (V2.3) share the exact same draft/accepted/rejected
+ * review lifecycle as findings — same type, aliased for readability where
+ * it's a proposal rather than a finding. Reuses `FINDING_STATUS_LABELS`.
+ */
+export type ProposalStatus = FindingStatus
+
 /** Lifecycle of one AI-generated deliverable — never a fake percentage, just where it is. */
 export type DeliverableStatus = 'idle' | 'preparing' | 'generating' | 'reviewing' | 'complete' | 'failed'
 
@@ -121,6 +201,10 @@ export interface Stage {
   content: Record<string, DeliverableState>
   /** Ideate only: id of the chosen concept within stages.ideate.content.concepts — the source for the Solution stage. */
   selectedConceptId?: string
+  /** Validate only: evidence manually captured from testing conducted outside Solvr (V2.2). Never AI-generated. */
+  evidence: ValidationEvidenceItem[]
+  /** Iterate only: ids of accepted Validate findings the user has chosen to analyse (V2.3, Section 4/7). */
+  selectedFindingIds: string[]
   deliverables: StageRecord[]
   assumptions: StageRecord[]
   gaps: StageRecord[]
@@ -135,6 +219,8 @@ export function createEmptyStage(): Stage {
     status: 'not_started',
     readinessScore: 0,
     content: {},
+    evidence: [],
+    selectedFindingIds: [],
     deliverables: [],
     assumptions: [],
     gaps: [],
@@ -151,7 +237,13 @@ export function createEmptyStage(): Stage {
  */
 export function hydrateStage(stage: Stage | undefined | null): Stage {
   if (!stage) return createEmptyStage()
-  return { ...createEmptyStage(), ...stage, content: stage.content ?? {} }
+  return {
+    ...createEmptyStage(),
+    ...stage,
+    content: stage.content ?? {},
+    evidence: stage.evidence ?? [],
+    selectedFindingIds: stage.selectedFindingIds ?? [],
+  }
 }
 
 /** A stage's status is derived from its readiness assessment and how far the project has moved on — never stored redundantly. */
@@ -258,6 +350,8 @@ export function createProjectStages(): Record<StageKey, Stage> {
     define: createEmptyStage(),
     ideate: createEmptyStage(),
     solution: createEmptyStage(),
+    validate: createEmptyStage(),
+    iterate: createEmptyStage(),
   }
 }
 

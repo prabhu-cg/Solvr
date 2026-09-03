@@ -24,7 +24,7 @@ export interface AIGenerateRequest {
   onReasoning?: (delta: string) => void
 }
 
-export type CritiqueStage = 'discover' | 'define' | 'ideate' | 'solution'
+export type CritiqueStage = 'discover' | 'define' | 'ideate' | 'solution' | 'validate' | 'iterate'
 
 export interface AICritiqueRequest {
   stage: CritiqueStage

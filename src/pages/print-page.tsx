@@ -52,7 +52,7 @@ export function PrintPage() {
         }
         .doc-h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 4px; }
         .doc-h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin: 40px 0 4px; border-top: 1px solid #e4e3ec; padding-top: 24px; }
-        .doc-h3 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; color: #362fa3; }
+        .doc-h3 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; color: #a93a03; }
         .doc-p { font-size: 13px; line-height: 1.6; margin: 0 0 8px; color: #18181b; }
         .doc-empty { font-size: 13px; color: #6f6f78; font-style: italic; margin: 0 0 8px; }
         .doc-list { margin: 0 0 10px; padding-left: 20px; font-size: 13px; line-height: 1.6; }

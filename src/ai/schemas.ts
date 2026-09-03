@@ -343,7 +343,350 @@ export const designConfidenceSchema = z.object({
 export type DesignConfidence = z.infer<typeof designConfidenceSchema>
 
 // ---------------------------------------------------------------------------
-// Readiness (shared shape for Discover, Define, Ideate and Solution critique)
+// Validate
+// ---------------------------------------------------------------------------
+
+/**
+ * Set only when key project context needed for a good output was missing —
+ * plain language noting the output rests on limited context (Section 9:
+ * "do not invent project facts"). Null when the context was sufficient.
+ */
+const contextNoteSchema = z
+  .string()
+  .nullable()
+  .describe(
+    'Set to a plain-language note only if project information needed for this output was missing or thin — e.g. "Some project information is missing. The generated output is based on the available context." Null if the available context was sufficient.',
+  )
+
+export const usabilityTestPlanSchema = z.object({
+  objective: z.string(),
+  researchGoals: z.array(z.string()).min(1).max(6),
+  validationGoals: z.array(z.string()).min(1).max(6),
+  targetParticipants: z.string(),
+  suggestedNumberOfParticipants: z.string().describe('A realistic, qualitative suggestion, e.g. "5-8 participants".'),
+  testingMethod: z.string().describe('e.g. moderated usability testing, unmoderated remote testing, heuristic-assisted walkthrough.'),
+  testFormat: z.string().describe('e.g. remote, in-person, hybrid.'),
+  sessionDuration: z.string(),
+  moderatorGuidance: z.array(z.string()).min(2).max(8),
+  materialsRequired: z.array(z.string()).min(1).max(8),
+  risksOrConsiderations: z.array(z.string()).min(1).max(6),
+  contextNote: contextNoteSchema,
+})
+export type UsabilityTestPlan = z.infer<typeof usabilityTestPlanSchema>
+
+export const testScenarioItemSchema = z.object({
+  title: z.string(),
+  userContext: z.string().describe('Who this user is and what situation they are already in.'),
+  situation: z.string(),
+  goal: z.string(),
+  assumptions: z.array(z.string()).max(4),
+})
+export const testScenariosSchema = z.object({
+  items: z
+    .array(testScenarioItemSchema)
+    .min(2)
+    .max(6)
+    .describe('Specific to this project — never generic placeholder scenarios.'),
+  contextNote: contextNoteSchema,
+})
+export type TestScenarioItem = z.infer<typeof testScenarioItemSchema>
+export type TestScenarios = z.infer<typeof testScenariosSchema>
+
+export const testTaskItemSchema = z.object({
+  title: z.string(),
+  userInstruction: z
+    .string()
+    .describe('Outcome-oriented instruction to give the participant. Never names the exact UI control — describe the goal, not the click.'),
+  expectedOutcome: z.string(),
+  evaluates: z.string().describe('What this task is designed to reveal about the design.'),
+})
+export const testTasksSchema = z.object({
+  items: z.array(testTaskItemSchema).min(3).max(8),
+  contextNote: contextNoteSchema,
+})
+export type TestTaskItem = z.infer<typeof testTaskItemSchema>
+export type TestTasks = z.infer<typeof testTasksSchema>
+
+const validationQuestionGroupSchema = z.array(z.string()).min(2).max(6).describe('Open-ended, neutral, non-leading questions.')
+export const validationInterviewQuestionsSchema = z.object({
+  beforeTesting: validationQuestionGroupSchema.describe('Background, previous experience, expectations.'),
+  duringTesting: validationQuestionGroupSchema.describe('Understanding, decision making, confidence, confusion, expectations.'),
+  afterTesting: validationQuestionGroupSchema.describe('Overall experience, difficulties, confidence, satisfaction, improvement suggestions.'),
+  contextNote: contextNoteSchema,
+})
+export type ValidationInterviewQuestions = z.infer<typeof validationInterviewQuestionsSchema>
+
+export const successCriterionItemSchema = z.object({
+  criterion: z.string(),
+  measurement: z.string().describe('e.g. task completion, task success, time on task, error rate, user confidence, user satisfaction.'),
+  target: z.string().describe('A target to aim for — never a result. This has not happened yet.'),
+  reason: z.string(),
+})
+export const successCriteriaSchema = z.object({
+  items: z.array(successCriterionItemSchema).min(3).max(8),
+  contextNote: contextNoteSchema,
+})
+export type SuccessCriterionItem = z.infer<typeof successCriterionItemSchema>
+export type SuccessCriteria = z.infer<typeof successCriteriaSchema>
+
+export const heuristicReviewItemSchema = z.object({
+  heuristic: z.string().describe('A recognised UX heuristic, e.g. visibility of system status, error prevention.'),
+  reviewQuestion: z.string().describe('A concrete question to check during the review — this has NOT been answered yet.'),
+  relevantScreenOrFlow: z.string(),
+  potentialRisk: z.string(),
+})
+export const heuristicReviewSchema = z.object({
+  items: z
+    .array(heuristicReviewItemSchema)
+    .min(6)
+    .max(10)
+    .describe('A preparation checklist only — never phrase items as if the review already happened.'),
+  contextNote: contextNoteSchema,
+})
+export type HeuristicReviewItem = z.infer<typeof heuristicReviewItemSchema>
+export type HeuristicReview = z.infer<typeof heuristicReviewSchema>
+
+// ---------------------------------------------------------------------------
+// Validate — Evidence Analysis (V2.2)
+//
+// Every item below carries `supportingEvidenceIds` referencing the exact
+// "id" values of the validation evidence supplied in context — never
+// invented (Section 15: analysis transparency). `severityLevelSchema` and
+// `priorityLevelSchema` are the shared scales used across prioritised
+// issues and findings.
+// ---------------------------------------------------------------------------
+
+export const severityLevelSchema = z.enum(['critical', 'high', 'medium', 'low'])
+export const priorityLevelSchema = z.enum(['high', 'medium', 'low'])
+const supportingEvidenceIdsSchema = z
+  .array(z.string())
+  .min(1)
+  .max(12)
+  .describe('Exact "id" values from the supplied validation evidence — never invent ids that were not supplied.')
+
+export const themeItemSchema = z.object({
+  theme: z.string(),
+  description: z.string(),
+  supportingEvidenceIds: supportingEvidenceIdsSchema,
+})
+export const themesSchema = z.object({
+  items: z.array(themeItemSchema).min(1).max(8),
+  contextNote: contextNoteSchema,
+})
+export type ThemeItem = z.infer<typeof themeItemSchema>
+export type Themes = z.infer<typeof themesSchema>
+
+export const patternItemSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  supportingEvidenceIds: supportingEvidenceIdsSchema,
+  confidence: z
+    .enum(['high', 'medium', 'low'])
+    .describe('Reflects the strength, number and consistency of the supporting evidence — never implies statistical certainty.'),
+})
+export const patternsSchema = z.object({
+  items: z.array(patternItemSchema).min(1).max(8),
+  contextNote: contextNoteSchema,
+})
+export type PatternItem = z.infer<typeof patternItemSchema>
+export type Patterns = z.infer<typeof patternsSchema>
+
+export const prioritisedIssueItemSchema = z.object({
+  issue: z.string(),
+  priority: priorityLevelSchema,
+  severity: severityLevelSchema.describe(
+    'Critical: prevents completion of an essential task. High: significantly impacts the experience or task completion. Medium: noticeable friction, usually recoverable. Low: minor issue. Do not default every issue to high.',
+  ),
+  supportingEvidenceIds: supportingEvidenceIdsSchema,
+  rationale: z.string(),
+})
+export const prioritisedIssuesSchema = z.object({
+  items: z.array(prioritisedIssueItemSchema).min(1).max(12),
+  contextNote: contextNoteSchema,
+})
+export type PrioritisedIssueItem = z.infer<typeof prioritisedIssueItemSchema>
+export type PrioritisedIssues = z.infer<typeof prioritisedIssuesSchema>
+
+export const validationInsightItemSchema = z.object({
+  insight: z.string().describe('Goes beyond restating the evidence — a synthesised explanation, not generic UX advice.'),
+  supportingEvidenceIds: supportingEvidenceIdsSchema,
+})
+export const validationInsightsSchema = z.object({
+  items: z.array(validationInsightItemSchema).min(1).max(8),
+  contextNote: contextNoteSchema,
+})
+export type ValidationInsightItem = z.infer<typeof validationInsightItemSchema>
+export type ValidationInsights = z.infer<typeof validationInsightsSchema>
+
+export const findingStatusSchema = z.enum(['draft', 'accepted', 'rejected'])
+
+export const findingCandidateSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  theme: z.string().describe('Which theme this finding relates to, if any. Empty string if none.'),
+  severity: severityLevelSchema,
+  priority: priorityLevelSchema,
+  supportingEvidenceIds: supportingEvidenceIdsSchema,
+  insight: z.string().describe('The synthesised insight behind this finding.'),
+})
+export const findingsSchema = z.object({
+  items: z
+    .array(findingCandidateSchema)
+    .min(1)
+    .max(10)
+    .describe('Draft candidates for the user to review — never present these as already validated conclusions.'),
+  contextNote: contextNoteSchema,
+})
+export type FindingCandidate = z.infer<typeof findingCandidateSchema>
+export type Findings = z.infer<typeof findingsSchema>
+/** Findings are given a stable client-side id and a review status once generated, mirroring `ConceptWithId` — see `ideate-deliverables.tsx`. */
+export type FindingWithId = FindingCandidate & { id: string; status: z.infer<typeof findingStatusSchema> }
+export interface FindingsWithIds {
+  items: FindingWithId[]
+  contextNote: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Iterate (V2.3)
+//
+// Every item traces back to the accepted findings it's grounded in via
+// `findingIds` (Section 20: traceability) — never invented. Proposals never
+// touch the live Solution deliverables themselves; accepting one is the
+// only thing that writes into Solution content (Section 16: no silent
+// overwrites), handled in the UI layer, not here.
+// ---------------------------------------------------------------------------
+
+export const affectedDeliverableSchema = z.enum([
+  'recommendedSolution',
+  'userFlow',
+  'informationArchitecture',
+  'screenList',
+  'screenSpecifications',
+  'productRequirements',
+])
+export type AffectedDeliverable = z.infer<typeof affectedDeliverableSchema>
+
+export const AFFECTED_DELIVERABLE_LABELS: Record<AffectedDeliverable, string> = {
+  recommendedSolution: 'Recommended Solution',
+  userFlow: 'User Flow',
+  informationArchitecture: 'Information Architecture',
+  screenList: 'Screen List',
+  screenSpecifications: 'Screen Specifications',
+  productRequirements: 'Product Requirements',
+}
+
+const findingIdsSchema = z
+  .array(z.string())
+  .min(1)
+  .max(8)
+  .describe('Exact "id" values from the selected accepted findings supplied in context — never invent ids that were not supplied.')
+
+export const impactAnalysisItemSchema = z.object({
+  affectedDeliverable: affectedDeliverableSchema,
+  impact: z.string().describe('What may need to change.'),
+  reason: z.string().describe('Why, tied directly to the finding.'),
+  findingIds: findingIdsSchema,
+})
+export const impactAnalysisSchema = z.object({
+  items: z
+    .array(impactAnalysisItemSchema)
+    .min(1)
+    .max(12)
+    .describe('Only genuinely relevant impacts — never claim every finding affects every deliverable.'),
+  contextNote: contextNoteSchema,
+})
+export type ImpactAnalysisItem = z.infer<typeof impactAnalysisItemSchema>
+export type ImpactAnalysis = z.infer<typeof impactAnalysisSchema>
+
+export const recommendationChangeItemSchema = z.object({
+  title: z.string(),
+  description: z
+    .string()
+    .describe('Specific and actionable — never generic advice like "improve navigation".'),
+  problemAddressed: z.string(),
+  findingIds: findingIdsSchema,
+  expectedBenefit: z.string(),
+  affectedDeliverables: z.array(affectedDeliverableSchema).min(1).max(6),
+})
+export const iterationRecommendationsSchema = z.object({
+  items: z.array(recommendationChangeItemSchema).min(1).max(10),
+  contextNote: contextNoteSchema,
+})
+export type RecommendationChangeItem = z.infer<typeof recommendationChangeItemSchema>
+export type IterationRecommendations = z.infer<typeof iterationRecommendationsSchema>
+
+export const proposalStatusSchema = z.enum(['draft', 'accepted', 'rejected'])
+
+export const userFlowProposalItemSchema = z.object({
+  findingIds: findingIdsSchema,
+  rationale: z.string(),
+  proposedContent: userFlowSchema,
+})
+export const userFlowProposalsSchema = z.object({
+  items: z.array(userFlowProposalItemSchema).length(1).describe('Exactly one revised flow proposal.'),
+  contextNote: contextNoteSchema,
+})
+export type UserFlowProposalItem = z.infer<typeof userFlowProposalItemSchema>
+export type UserFlowProposals = z.infer<typeof userFlowProposalsSchema>
+export type UserFlowProposalWithId = UserFlowProposalItem & { id: string; status: z.infer<typeof proposalStatusSchema> }
+export interface UserFlowProposalsWithIds {
+  items: UserFlowProposalWithId[]
+  contextNote: string | null
+}
+
+export const screenSpecChangeTypeSchema = z.enum([
+  'add_section',
+  'remove_section',
+  'modify_content',
+  'modify_interaction',
+  'add_guidance',
+  'improve_error_handling',
+  'change_hierarchy',
+])
+export const screenSpecProposalItemSchema = z.object({
+  findingIds: findingIdsSchema,
+  screen: z
+    .string()
+    .describe('Match an existing screen name from the current wireframe specs where possible; name a new screen only if genuinely new.'),
+  changeType: screenSpecChangeTypeSchema,
+  rationale: z.string(),
+  proposedContent: wireframeSpecSchema,
+})
+export const screenSpecProposalsSchema = z.object({
+  items: z.array(screenSpecProposalItemSchema).min(1).max(6),
+  contextNote: contextNoteSchema,
+})
+export type ScreenSpecProposalItem = z.infer<typeof screenSpecProposalItemSchema>
+export type ScreenSpecProposals = z.infer<typeof screenSpecProposalsSchema>
+export type ScreenSpecProposalWithId = ScreenSpecProposalItem & { id: string; status: z.infer<typeof proposalStatusSchema> }
+export interface ScreenSpecProposalsWithIds {
+  items: ScreenSpecProposalWithId[]
+  contextNote: string | null
+}
+
+export const requirementProposalItemSchema = z.object({
+  findingIds: findingIdsSchema,
+  requirement: z
+    .string()
+    .describe('The exact existing requirement text this targets, matched to an item in Product Requirements. Empty string only if this is a genuinely new requirement.'),
+  proposedChange: z.string(),
+  rationale: z.string(),
+  proposedContent: requirementItemSchema.describe('The full revised requirement, including its own acceptance criteria.'),
+})
+export const requirementProposalsSchema = z.object({
+  items: z.array(requirementProposalItemSchema).min(1).max(8),
+  contextNote: contextNoteSchema,
+})
+export type RequirementProposalItem = z.infer<typeof requirementProposalItemSchema>
+export type RequirementProposals = z.infer<typeof requirementProposalsSchema>
+export type RequirementProposalWithId = RequirementProposalItem & { id: string; status: z.infer<typeof proposalStatusSchema> }
+export interface RequirementProposalsWithIds {
+  items: RequirementProposalWithId[]
+  contextNote: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Readiness (shared shape for Discover, Define, Ideate, Solution, Validate and Iterate critique)
 // ---------------------------------------------------------------------------
 
 export const readinessResultSchema = z.object({

@@ -66,6 +66,8 @@ export function SolutionPage() {
               error={readinessHook.error}
               onRun={readinessHook.run}
               reasoning={readinessHook.reasoning}
+              nextStageHref={`/app/projects/${project.id}/validate`}
+              nextStageLabel="Validate"
             />
 
             <div id="information-architecture">

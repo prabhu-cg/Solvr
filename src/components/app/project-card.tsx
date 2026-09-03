@@ -10,6 +10,8 @@ const STAGE_ROUTE: Record<ProjectSummary['currentStage'], string> = {
   define: 'define',
   ideate: 'ideate',
   solution: 'solution',
+  validate: 'validate',
+  iterate: 'iterate',
 }
 
 const STAGE_DISPLAY: Record<ProjectSummary['currentStage'], string> = {
@@ -18,6 +20,8 @@ const STAGE_DISPLAY: Record<ProjectSummary['currentStage'], string> = {
   define: 'Define',
   ideate: 'Ideate',
   solution: 'Solution',
+  validate: 'Validate',
+  iterate: 'Iterate',
 }
 
 function formatRelativeDate(iso: string): string {

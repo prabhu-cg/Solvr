@@ -30,12 +30,39 @@ const projectContextSchema = z.object({
     constraints: z.string().optional(),
     evidence: z.string().optional(),
   }),
-  currentStage: z.enum(['discover', 'define', 'ideate', 'solution']),
+  currentStage: z.enum(['discover', 'define', 'ideate', 'solution', 'validate', 'iterate']),
   priorAcceptedDeliverables: z.record(z.string(), z.unknown()),
   currentStageDeliverables: z.record(z.string(), z.unknown()),
   knownGaps: z.array(z.string()),
   knownAssumptions: z.array(z.string()),
   selectedConcept: z.unknown().optional(),
+  validationEvidence: z
+    .array(
+      z.object({
+        id: z.string(),
+        type: z.string(),
+        title: z.string(),
+        description: z.string(),
+        context: z.string().optional(),
+        relatedTask: z.string().optional(),
+        severity: z.string().optional(),
+      }),
+    )
+    .optional(),
+  selectedFindings: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string(),
+        theme: z.string(),
+        severity: z.string(),
+        priority: z.string(),
+        insight: z.string(),
+      }),
+    )
+    .optional(),
+  currentSolutionContent: z.record(z.string(), z.unknown()).optional(),
 })
 
 const requestSchema = z.discriminatedUnion('mode', [
@@ -47,7 +74,7 @@ const requestSchema = z.discriminatedUnion('mode', [
   }),
   z.object({
     mode: z.literal('critique'),
-    stage: z.enum(['discover', 'define', 'ideate', 'solution']),
+    stage: z.enum(['discover', 'define', 'ideate', 'solution', 'validate', 'iterate']),
     context: projectContextSchema,
   }),
 ])
@@ -69,6 +96,23 @@ function describeReadinessContext(context: AIProjectContext): string {
   lines.push(`This stage's outputs so far (JSON):\n${truncateContextJson(context.currentStageDeliverables)}`)
   if (Object.keys(context.priorAcceptedDeliverables).length > 0) {
     lines.push(`Accepted outputs from earlier stages (JSON):\n${truncateContextJson(context.priorAcceptedDeliverables)}`)
+  }
+  if (context.validationEvidence) {
+    lines.push(
+      context.validationEvidence.length > 0
+        ? `Validation evidence supplied by the user (JSON):\n${truncateContextJson(context.validationEvidence)}`
+        : 'No validation evidence has been supplied yet.',
+    )
+  }
+  if (context.selectedFindings) {
+    lines.push(
+      context.selectedFindings.length > 0
+        ? `Findings selected for iteration (JSON):\n${truncateContextJson(context.selectedFindings)}`
+        : 'No findings have been selected for iteration yet.',
+    )
+  }
+  if (context.currentSolutionContent) {
+    lines.push(`Current Solution-stage content (JSON):\n${truncateContextJson(context.currentSolutionContent)}`)
   }
   return lines.join('\n')
 }

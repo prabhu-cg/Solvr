@@ -5,12 +5,22 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { EVIDENCE_TYPE_LABELS, type EvidenceType } from '@/data/models'
+import { EVIDENCE_SEVERITY_LABELS, EVIDENCE_TYPE_LABELS, FINDING_STATUS_LABELS, type EvidenceSeverity, type EvidenceType, type FindingStatus } from '@/data/models'
 
 export interface RecordFieldSpec<T> {
   key: keyof T & string
   label: string
-  kind: 'text' | 'textarea' | 'confidence' | 'evidenceType' | 'number' | 'stringList' | 'priority'
+  kind:
+    | 'text'
+    | 'textarea'
+    | 'confidence'
+    | 'evidenceType'
+    | 'number'
+    | 'stringList'
+    | 'priority'
+    | 'priorityLevel'
+    | 'severity'
+    | 'findingStatus'
 }
 
 interface RecordListEditorProps<T extends Record<string, unknown>> {
@@ -38,6 +48,23 @@ const PRIORITY_OPTIONS = [
   { value: 'should', label: 'Should have' },
   { value: 'could', label: 'Could have' },
 ] as const
+
+/** High/medium/low priority scale — distinct from PRIORITY_OPTIONS above (Solution's must/should/could requirement scale). Used by Validate's prioritised issues and findings. */
+const PRIORITY_LEVEL_OPTIONS = [
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+] as const
+
+const SEVERITY_OPTIONS = (Object.keys(EVIDENCE_SEVERITY_LABELS) as EvidenceSeverity[]).map((value) => ({
+  value,
+  label: EVIDENCE_SEVERITY_LABELS[value],
+}))
+
+const FINDING_STATUS_OPTIONS = (Object.keys(FINDING_STATUS_LABELS) as FindingStatus[]).map((value) => ({
+  value,
+  label: FINDING_STATUS_LABELS[value],
+}))
 
 export function RecordListEditor<T extends Record<string, unknown>>({
   value,
@@ -130,6 +157,30 @@ export function RecordListEditor<T extends Record<string, unknown>>({
                       value={String(item[field.key] ?? 'should')}
                       onChange={(v) => updateField(index, field.key, v)}
                       options={[...PRIORITY_OPTIONS]}
+                    />
+                  )}
+                  {field.kind === 'priorityLevel' && (
+                    <SegmentedControl
+                      aria-label={field.label}
+                      value={String(item[field.key] ?? 'medium')}
+                      onChange={(v) => updateField(index, field.key, v)}
+                      options={[...PRIORITY_LEVEL_OPTIONS]}
+                    />
+                  )}
+                  {field.kind === 'severity' && (
+                    <SegmentedControl
+                      aria-label={field.label}
+                      value={String(item[field.key] ?? 'medium')}
+                      onChange={(v) => updateField(index, field.key, v)}
+                      options={SEVERITY_OPTIONS}
+                    />
+                  )}
+                  {field.kind === 'findingStatus' && (
+                    <SegmentedControl
+                      aria-label={field.label}
+                      value={String(item[field.key] ?? 'draft')}
+                      onChange={(v) => updateField(index, field.key, v)}
+                      options={FINDING_STATUS_OPTIONS}
                     />
                   )}
                   {field.kind === 'stringList' && (

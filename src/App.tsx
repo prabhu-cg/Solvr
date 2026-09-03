@@ -2,12 +2,14 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { DefinePage } from '@/pages/define-page'
 import { DiscoverPage } from '@/pages/discover-page'
 import { IdeatePage } from '@/pages/ideate-page'
+import { IteratePage } from '@/pages/iterate-page'
 import { MarketingPage } from '@/pages/marketing-page'
 import { PrintPage } from '@/pages/print-page'
 import { ProjectSetupPage } from '@/pages/project-setup-page'
 import { ProjectWorkspaceLayout } from '@/pages/project-workspace-layout'
 import { ProjectsListPage } from '@/pages/projects-list-page'
 import { SolutionPage } from '@/pages/solution-page'
+import { ValidatePage } from '@/pages/validate-page'
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Route path="define" element={<DefinePage />} />
         <Route path="ideate" element={<IdeatePage />} />
         <Route path="solution" element={<SolutionPage />} />
+        <Route path="validate" element={<ValidatePage />} />
+        <Route path="iterate" element={<IteratePage />} />
         <Route path="*" element={<Navigate to="setup" replace />} />
       </Route>
 

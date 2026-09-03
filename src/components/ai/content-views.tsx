@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Label } from '@/components/ui/label'
 
@@ -50,4 +51,16 @@ export function ViewGrid({ children }: { children: ReactNode }) {
 
 export function EditStack({ children }: { children: ReactNode }) {
   return <div className="flex flex-col gap-5">{children}</div>
+}
+
+/** A dashed-border placeholder used to gate a tab behind a prerequisite — e.g. "add evidence before generating analysis". */
+export function EmptyTabState({ icon: Icon, message }: { icon: LucideIcon; message: string }) {
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border-strong bg-muted/40 p-8 text-center">
+      <span className="flex size-10 items-center justify-center rounded-full bg-card text-muted-foreground shadow-xs">
+        <Icon className="size-5" aria-hidden />
+      </span>
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  )
 }

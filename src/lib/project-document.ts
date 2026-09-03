@@ -2,33 +2,57 @@ import type {
   Assumptions,
   Concepts,
   DesignConfidence,
+  FindingsWithIds,
+  HeuristicReview,
   HMW,
+  ImpactAnalysis,
   InformationArchitecture,
   InsightItem,
   Insights,
   InterviewQuestions,
+  IterationRecommendations,
   Opportunities,
   PainPointItem,
   PainPoints,
+  Patterns,
   Persona,
   Prioritisation,
+  PrioritisedIssues,
   ProblemStatement,
   ProductRequirements,
   Recommendation,
   RequirementItem,
+  RequirementProposalsWithIds,
   ResearchPlan,
   ResearchSynthesis,
   ScreenList,
+  ScreenSpecProposalsWithIds,
+  SuccessCriteria,
   SurveyQuestions,
+  TestScenarios,
+  TestTasks,
+  Themes,
+  UsabilityTestPlan,
   UserFlow,
+  UserFlowProposalsWithIds,
   UserJourney,
   UserNeedItem,
   UserNeeds,
+  ValidationInsights,
+  ValidationInterviewQuestions,
   WireframeSpecs,
 } from '@/ai/schemas'
+import { AFFECTED_DELIVERABLE_LABELS } from '@/ai/schemas'
 import type { IAProductArea } from '@/ai/schemas'
 import { heading, keyValue, list, note, paragraph, table, type DocBlock, NOT_GENERATED_NOTE } from '@/lib/doc-blocks'
-import type { Project, Stage } from '@/data/models'
+import {
+  EVIDENCE_SEVERITY_LABELS,
+  FINDING_STATUS_LABELS,
+  VALIDATION_EVIDENCE_TYPE_LABELS,
+  type Project,
+  type Stage,
+  type ValidationEvidenceItem,
+} from '@/data/models'
 
 function getContent<T>(stage: Stage, localId: string): T | undefined {
   const deliverable = stage.content[localId]
@@ -397,6 +421,328 @@ function solutionSection(stage: Stage): DocBlock[] {
 }
 
 // ---------------------------------------------------------------------------
+// Validate
+// ---------------------------------------------------------------------------
+
+function validateSection(stage: Stage): DocBlock[] {
+  const blocks: DocBlock[] = [
+    heading(2, 'Validate'),
+    note(
+      'Solvr does not conduct usability testing, interviews or heuristic reviews itself, and does not claim to have performed user research — the plan below is for testing outside Solvr, and the analysis further down is generated only from evidence the user supplied.',
+    ),
+  ]
+
+  blocks.push(heading(3, 'Usability Test Plan'))
+  const plan = getContent<UsabilityTestPlan>(stage, 'testPlan')
+  if (!plan) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    blocks.push(
+      paragraph(plan.objective),
+      keyValue([
+        { label: 'Target participants', value: plan.targetParticipants },
+        { label: 'Suggested number of participants', value: plan.suggestedNumberOfParticipants },
+        { label: 'Testing method', value: plan.testingMethod },
+        { label: 'Test format', value: plan.testFormat },
+        { label: 'Session duration', value: plan.sessionDuration },
+      ]),
+      paragraph('**Research goals**'),
+      list(plan.researchGoals),
+      paragraph('**Validation goals**'),
+      list(plan.validationGoals),
+      paragraph('**Moderator guidance**'),
+      list(plan.moderatorGuidance),
+      paragraph('**Materials required**'),
+      list(plan.materialsRequired),
+      paragraph('**Risks or considerations**'),
+      list(plan.risksOrConsiderations),
+    )
+  }
+
+  blocks.push(heading(3, 'Test Scenarios'))
+  const scenarios = getContent<TestScenarios>(stage, 'testScenarios')
+  if (!scenarios) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    for (const scenario of scenarios.items) {
+      blocks.push(
+        paragraph(`**${scenario.title}**`),
+        keyValue([
+          { label: 'User context', value: scenario.userContext },
+          { label: 'Situation', value: scenario.situation },
+          { label: 'Goal', value: scenario.goal },
+        ]),
+        list(scenario.assumptions),
+      )
+    }
+  }
+
+  blocks.push(heading(3, 'Test Tasks'))
+  const tasks = getContent<TestTasks>(stage, 'testTasks')
+  blocks.push(
+    tasks
+      ? table(
+          ['#', 'Title', 'User instruction', 'Expected outcome', 'Evaluates'],
+          tasks.items.map((t, i) => [String(i + 1), t.title, t.userInstruction, t.expectedOutcome, t.evaluates]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Interview Questions'))
+  const iq = getContent<ValidationInterviewQuestions>(stage, 'interviewQuestions')
+  if (!iq) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    blocks.push(
+      paragraph('**Before testing**'),
+      list(iq.beforeTesting),
+      paragraph('**During testing**'),
+      list(iq.duringTesting),
+      paragraph('**After testing**'),
+      list(iq.afterTesting),
+    )
+  }
+
+  blocks.push(heading(3, 'Success Criteria'))
+  const criteria = getContent<SuccessCriteria>(stage, 'successCriteria')
+  blocks.push(
+    criteria
+      ? table(
+          ['Criterion', 'Measurement', 'Target', 'Reason'],
+          criteria.items.map((c) => [c.criterion, c.measurement, c.target, c.reason]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Heuristic Review Checklist'))
+  const heuristics = getContent<HeuristicReview>(stage, 'heuristicReview')
+  blocks.push(
+    heuristics
+      ? table(
+          ['Heuristic', 'Review question', 'Relevant screen or flow', 'Potential risk'],
+          heuristics.items.map((h) => [h.heuristic, h.reviewQuestion, h.relevantScreenOrFlow, h.potentialRisk]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Evidence'))
+  if (stage.evidence.length === 0) blocks.push(note('No validation evidence has been added yet.'))
+  else {
+    blocks.push(
+      table(
+        ['Type', 'Title', 'Description', 'Context', 'Related task', 'Severity'],
+        stage.evidence.map((e) => [
+          VALIDATION_EVIDENCE_TYPE_LABELS[e.type],
+          e.title,
+          e.description,
+          e.context ?? '',
+          e.relatedTask ?? '',
+          e.severity ? EVIDENCE_SEVERITY_LABELS[e.severity] : '',
+        ]),
+      ),
+    )
+  }
+
+  function evidenceTrace(ids: string[]): string {
+    return ids
+      .map((id) => stage.evidence.find((e) => e.id === id))
+      .filter((e): e is ValidationEvidenceItem => !!e)
+      .map((e) => `${VALIDATION_EVIDENCE_TYPE_LABELS[e.type]}: ${e.title}`)
+      .join('; ')
+  }
+
+  blocks.push(heading(3, 'Themes'))
+  const themes = getContent<Themes>(stage, 'themes')
+  blocks.push(
+    themes
+      ? table(
+          ['Theme', 'Description', 'Supporting evidence'],
+          themes.items.map((t) => [t.theme, t.description, evidenceTrace(t.supportingEvidenceIds)]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Patterns'))
+  const patterns = getContent<Patterns>(stage, 'patterns')
+  blocks.push(
+    patterns
+      ? table(
+          ['Pattern', 'Description', 'Confidence', 'Supporting evidence'],
+          patterns.items.map((p) => [p.title, p.description, p.confidence, evidenceTrace(p.supportingEvidenceIds)]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Prioritised Issues'))
+  const prioritisedIssues = getContent<PrioritisedIssues>(stage, 'prioritisedIssues')
+  blocks.push(
+    prioritisedIssues
+      ? table(
+          ['Issue', 'Priority', 'Severity', 'Rationale', 'Supporting evidence'],
+          prioritisedIssues.items.map((i) => [
+            i.issue,
+            i.priority,
+            EVIDENCE_SEVERITY_LABELS[i.severity],
+            i.rationale,
+            evidenceTrace(i.supportingEvidenceIds),
+          ]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Insights'))
+  const validationInsights = getContent<ValidationInsights>(stage, 'insights')
+  blocks.push(
+    validationInsights
+      ? table(
+          ['Insight', 'Supporting evidence'],
+          validationInsights.items.map((i) => [i.insight, evidenceTrace(i.supportingEvidenceIds)]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Findings'))
+  const findings = getContent<FindingsWithIds>(stage, 'findings')
+  if (!findings) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    blocks.push(
+      table(
+        ['Status', 'Title', 'Theme', 'Severity', 'Priority', 'Description', 'Insight', 'Supporting evidence'],
+        findings.items.map((f) => [
+          FINDING_STATUS_LABELS[f.status],
+          f.title,
+          f.theme,
+          EVIDENCE_SEVERITY_LABELS[f.severity],
+          f.priority,
+          f.description,
+          f.insight,
+          evidenceTrace(f.supportingEvidenceIds),
+        ]),
+      ),
+    )
+  }
+
+  return blocks
+}
+
+// ---------------------------------------------------------------------------
+// Iterate (V2.3)
+// ---------------------------------------------------------------------------
+
+function iterateSection(project: Project): DocBlock[] {
+  const stage = project.stages.iterate
+  const findingsContent = getContent<FindingsWithIds>(project.stages.validate, 'findings')
+  const selectedIds = new Set(stage.selectedFindingIds)
+  const selectedFindings = (findingsContent?.items ?? []).filter((f) => f.status === 'accepted' && selectedIds.has(f.id))
+
+  function findingTrace(ids: string[]): string {
+    return ids
+      .map((id) => findingsContent?.items.find((f) => f.id === id))
+      .filter((f): f is NonNullable<typeof f> => !!f)
+      .map((f) => f.title)
+      .join('; ')
+  }
+
+  const blocks: DocBlock[] = [
+    heading(2, 'Iterate'),
+    note(
+      'Solvr never overwrites the Solution automatically — every proposed update below only takes effect once the user explicitly accepts it.',
+    ),
+  ]
+
+  blocks.push(heading(3, 'Findings Selected For Iteration'))
+  blocks.push(
+    selectedFindings.length > 0
+      ? list(selectedFindings.map((f) => `${f.title} (${f.priority} priority, ${EVIDENCE_SEVERITY_LABELS[f.severity]})`))
+      : note('No accepted findings have been selected yet.'),
+  )
+
+  blocks.push(heading(3, 'Impact Analysis'))
+  const impactAnalysis = getContent<ImpactAnalysis>(stage, 'impactAnalysis')
+  blocks.push(
+    impactAnalysis
+      ? table(
+          ['Affected deliverable', 'Impact', 'Reason', 'From finding'],
+          impactAnalysis.items.map((i) => [
+            AFFECTED_DELIVERABLE_LABELS[i.affectedDeliverable],
+            i.impact,
+            i.reason,
+            findingTrace(i.findingIds),
+          ]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Recommended Changes'))
+  const recommendations = getContent<IterationRecommendations>(stage, 'recommendations')
+  if (!recommendations) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    for (const r of recommendations.items) {
+      blocks.push(
+        paragraph(`**${r.title}**`),
+        keyValue([
+          { label: 'Problem addressed', value: r.problemAddressed },
+          { label: 'Expected benefit', value: r.expectedBenefit },
+          { label: 'Affected deliverables', value: r.affectedDeliverables.map((d) => AFFECTED_DELIVERABLE_LABELS[d]).join(', ') },
+          { label: 'From finding', value: findingTrace(r.findingIds) },
+        ]),
+        paragraph(r.description),
+      )
+    }
+  }
+
+  blocks.push(heading(3, 'Proposed User Flow Update'))
+  const userFlowProposals = getContent<UserFlowProposalsWithIds>(stage, 'userFlowProposals')
+  if (!userFlowProposals) blocks.push(note(NOT_GENERATED_NOTE))
+  else {
+    for (const p of userFlowProposals.items) {
+      blocks.push(
+        keyValue([
+          { label: 'Status', value: FINDING_STATUS_LABELS[p.status] },
+          { label: 'Rationale', value: p.rationale },
+          { label: 'From finding', value: findingTrace(p.findingIds) },
+        ]),
+        paragraph('**Proposed main path**'),
+        list(p.proposedContent.mainPath.map((s) => `${s.step} (${s.type}) — ${s.description}`)),
+      )
+    }
+  }
+
+  blocks.push(heading(3, 'Proposed Screen Specification Updates'))
+  const screenSpecProposals = getContent<ScreenSpecProposalsWithIds>(stage, 'screenSpecProposals')
+  blocks.push(
+    screenSpecProposals
+      ? table(
+          ['Status', 'Screen', 'Change type', 'Rationale', 'From finding'],
+          screenSpecProposals.items.map((p) => [
+            FINDING_STATUS_LABELS[p.status],
+            p.screen,
+            p.changeType.replace(/_/g, ' '),
+            p.rationale,
+            findingTrace(p.findingIds),
+          ]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  blocks.push(heading(3, 'Proposed Product Requirement Updates'))
+  const requirementProposals = getContent<RequirementProposalsWithIds>(stage, 'requirementProposals')
+  blocks.push(
+    requirementProposals
+      ? table(
+          ['Status', 'Targeted requirement', 'Proposed change', 'Rationale', 'From finding'],
+          requirementProposals.items.map((p) => [
+            FINDING_STATUS_LABELS[p.status],
+            p.requirement || 'New requirement',
+            p.proposedChange,
+            p.rationale,
+            findingTrace(p.findingIds),
+          ]),
+        )
+      : note(NOT_GENERATED_NOTE),
+  )
+
+  return blocks
+}
+
+// ---------------------------------------------------------------------------
 // Final Review
 // ---------------------------------------------------------------------------
 
@@ -488,6 +834,8 @@ export function compileProjectDocument(project: Project): DocBlock[] {
     ...defineSection(project.stages.define),
     ...ideateSection(project),
     ...solutionSection(project.stages.solution),
+    ...validateSection(project.stages.validate),
+    ...iterateSection(project),
     ...finalReviewSection(project),
   ]
 }
