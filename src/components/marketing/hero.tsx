@@ -43,7 +43,7 @@ export function Hero() {
 
         <LaptopMockup
           src="/app-screenshot.jpg"
-          alt="The Solvr workspace showing the Validate stage of a project, with a readiness check surfacing strengths, gaps and critical assumptions alongside the Discover through Iterate stage navigation."
+          alt="The Solvr workspace showing the Discover stage of a project, with a readiness check surfacing strengths, gaps and critical assumptions alongside the Discover through Iterate stage navigation."
           width={1469}
           height={950}
         />
