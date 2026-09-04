@@ -59,9 +59,9 @@ export function AboutDialog() {
       <div className="flex flex-col gap-3">
         <H>What it is</H>
         <p>
-          Solvr is a free, AI-guided Product/UX design workspace. It walks a rough product problem through five
-          stages — Project Setup, Discover, Define, Ideate and Solution — asking the questions a design process
-          normally asks, and using AI to help draft, critique and score readiness at every step.
+          Solvr is a free, AI-guided Product/UX design workspace. It walks a rough product problem through seven
+          stages — Project Setup, Discover, Define, Ideate, Solution, Validate and Iterate — asking the questions a
+          design process normally asks, and using AI to help draft, critique and score readiness at every step.
         </p>
         <p>
           It replaces a blank document with guided deliverables — research plans, personas, journey maps, concepts,
@@ -111,7 +111,7 @@ export function AboutDialog() {
         <p>
           Solvr grew out of that same instinct: most product problems don&rsquo;t fail from a lack of effort, they
           fail from skipping the thinking a proper design process would have forced. It&rsquo;s a small, focused
-          tool for doing that thinking anyway — five guided stages, AI keeping you honest, and a readiness score
+          tool for doing that thinking anyway — seven guided stages, AI keeping you honest, and a readiness score
           that names what&rsquo;s still missing.
         </p>
         <p>

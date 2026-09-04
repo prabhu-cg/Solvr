@@ -1,4 +1,4 @@
-import { FileSearch, Lightbulb, ListChecks, Target, Wrench } from 'lucide-react'
+import { FileSearch, FlaskConical, Lightbulb, ListChecks, RefreshCw, Target, Wrench } from 'lucide-react'
 import { Container } from '@/components/marketing/container'
 
 const STEPS = [
@@ -32,6 +32,18 @@ const STEPS = [
     title: 'Solution',
     description: 'Develop the strongest concept into a practical, structured product and UX specification.',
   },
+  {
+    number: '06',
+    icon: FlaskConical,
+    title: 'Validate',
+    description: 'Plan how to test the solution, bring back what you learn from real testing, and turn it into evidence-backed findings.',
+  },
+  {
+    number: '07',
+    icon: RefreshCw,
+    title: 'Iterate',
+    description: 'Turn accepted findings into an impact analysis and concrete proposed updates, reviewed side by side with what exists today.',
+  },
 ]
 
 export function ProcessSection() {
@@ -47,7 +59,7 @@ export function ProcessSection() {
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
             <div key={step.number} className="relative rounded-lg border border-border bg-card p-5">
               <div className="mb-4 flex items-center justify-between">

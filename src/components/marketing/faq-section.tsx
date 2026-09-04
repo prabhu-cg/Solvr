@@ -7,7 +7,7 @@ const FAQS = [
   {
     question: 'What is Solvr?',
     answer:
-      'Solvr is a guided workspace that takes a product problem through a structured Product/UX design process — from Project Setup through Discover, Define, Ideate and Solution.',
+      'Solvr is a guided workspace that takes a product problem through a structured Product/UX design process — from Project Setup through Discover, Define, Ideate, Solution, Validate and Iterate.',
   },
   {
     question: 'Who is Solvr for?',
@@ -22,7 +22,7 @@ const FAQS = [
   {
     question: 'What design process does Solvr use?',
     answer:
-      'A five-stage process: Project Setup, Discover, Define, Ideate and Solution — moving from understanding the problem to a practical, structured solution.',
+      'A seven-stage process: Project Setup, Discover, Define, Ideate, Solution, Validate and Iterate — moving from understanding the problem to a practical, structured solution, then testing it and improving it based on what you learn.',
   },
   {
     question: 'Is Solvr free?',

@@ -22,9 +22,10 @@ export function Hero() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
-            Solvr guides you from a product problem to a structured design solution — helping you
-            understand the problem, define the opportunity, explore solutions and turn the
-            strongest direction into a practical product specification.
+            Solvr guides you from a product problem to a validated design solution — helping you
+            understand the problem, define the opportunity, explore solutions, turn the
+            strongest direction into a practical specification, then test it and iterate on what
+            you learn.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -42,9 +43,9 @@ export function Hero() {
 
         <LaptopMockup
           src="/app-screenshot.jpg"
-          alt="The Solvr workspace showing a Discover-stage readiness check, with strengths, gaps and critical assumptions surfaced for a project."
+          alt="The Solvr workspace showing the Validate stage of a project, with a readiness check surfacing strengths, gaps and critical assumptions alongside the Discover through Iterate stage navigation."
           width={1469}
-          height={812}
+          height={950}
         />
       </Container>
     </section>

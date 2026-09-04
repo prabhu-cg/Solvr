@@ -25,15 +25,19 @@ export function LaptopMockup({
         </div>
       </div>
 
-      <div className="relative mx-[-10px] sm:mx-[-14px]">
-        <div
+      {/* Hinge seam, then a keyboard deck that flares out well past the screen's
+          width — the width step is what reads as "laptop base" rather than a
+          tablet's bottom bezel, so it needs to be a lot more than a sliver. */}
+      <div aria-hidden className="h-[3px] bg-zinc-800 sm:h-1" />
+      <div className="relative mx-[-28px] sm:mx-[-42px]">
+        <div className="h-4 rounded-b-xl bg-gradient-to-b from-zinc-300 via-zinc-100 to-zinc-400 shadow-[0_8px_12px_-6px_rgba(0,0,0,0.3)] sm:h-6" />
+        <span
           aria-hidden
-          className="absolute inset-x-2.5 top-0 h-px bg-black/20 sm:inset-x-3.5"
+          className="absolute bottom-0 left-1/2 h-1.5 w-14 -translate-x-1/2 translate-y-1/2 rounded-full bg-zinc-400/80 ring-1 ring-black/10 sm:h-2 sm:w-20"
         />
-        <div className="h-[10px] rounded-b-2xl bg-gradient-to-b from-zinc-300 via-zinc-100 to-zinc-300 sm:h-[14px]" />
       </div>
 
-      <div aria-hidden className="mx-auto mt-3 h-3 w-[80%] rounded-[50%] bg-black/10 blur-md sm:h-4" />
+      <div aria-hidden className="mx-auto mt-4 h-3 w-[70%] rounded-[50%] bg-black/10 blur-md sm:h-5" />
     </div>
   )
 }
