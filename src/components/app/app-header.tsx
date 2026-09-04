@@ -1,4 +1,5 @@
 import { ChevronDown, FolderKanban, Info, Menu } from 'lucide-react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/brand/logo'
 import { ProjectMenu } from '@/components/app/project-menu'
@@ -9,10 +10,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import type { Project } from '@/data/models'
 import { computeOverallReadiness } from '@/data/models'
+import { useProjectStore } from '@/store/useProjectStore'
 import type { SaveStatus } from '@/store/useProjectStore'
 
 interface AppHeaderProps {
@@ -24,6 +28,17 @@ interface AppHeaderProps {
 
 export function AppHeader({ project, saveStatus = 'idle', onOpenMobileNav, onOpenContextDrawer }: AppHeaderProps) {
   const readiness = project ? computeOverallReadiness(project) : null
+  const allProjects = useProjectStore((state) => state.projects)
+  const loadProjects = useProjectStore((state) => state.loadProjects)
+
+  // Populate the project switcher even when this project was opened directly
+  // (a bookmark or refresh) rather than via the projects list page, which is
+  // otherwise the only place that loads this list.
+  useEffect(() => {
+    loadProjects()
+  }, [loadProjects])
+
+  const otherProjects = project ? allProjects.filter((p) => p.id !== project.id) : []
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card px-4">
@@ -57,7 +72,22 @@ export function AppHeader({ project, saveStatus = 'idle', onOpenMobileNav, onOpe
                   <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
+              <DropdownMenuContent align="start" className="w-64">
+                {otherProjects.length > 0 && (
+                  <>
+                    <DropdownMenuLabel>Switch project</DropdownMenuLabel>
+                    <div className="max-h-64 overflow-y-auto">
+                      {otherProjects.map((p) => (
+                        <DropdownMenuItem key={p.id} asChild>
+                          <Link to={`/app/projects/${p.id}/${p.currentStage}`} className="min-w-0">
+                            <span className="truncate">{p.name}</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/app">
                     <FolderKanban className="size-4" />
