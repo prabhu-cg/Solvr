@@ -70,10 +70,13 @@ const projectContextSchema = z.object({
  * rather than passing the zod-inferred object straight through. The two
  * shapes are meant to be identical, but Vercel's separate type-check pass
  * over `api/` (distinct from this repo's own `tsc -b`) has been seen to
- * infer the zod object's nested `project` fields as optional where this
- * repo's own build does not — an explicit, field-by-field reconstruction
- * checks each value against its real required type instead of relying on
- * whole-object structural comparison, so it can't be caught by that.
+ * infer zod object fields as optional where this repo's own build does
+ * not — an explicit, field-by-field reconstruction checks each value
+ * against its real required type instead of relying on whole-object
+ * structural comparison, so it can't be caught by that. This has to go
+ * all the way down: reconstructing only the outer `project` object was
+ * not enough, the same mismatch reappeared one level down on the two
+ * array fields below until they were reconstructed the same way.
  */
 function toAIProjectContext(context: z.infer<typeof projectContextSchema>): AIProjectContext {
   return {
@@ -92,8 +95,24 @@ function toAIProjectContext(context: z.infer<typeof projectContextSchema>): AIPr
     knownGaps: context.knownGaps,
     knownAssumptions: context.knownAssumptions,
     selectedConcept: context.selectedConcept,
-    validationEvidence: context.validationEvidence,
-    selectedFindings: context.selectedFindings,
+    validationEvidence: context.validationEvidence?.map((item) => ({
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      description: item.description,
+      context: item.context,
+      relatedTask: item.relatedTask,
+      severity: item.severity,
+    })),
+    selectedFindings: context.selectedFindings?.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      theme: item.theme,
+      severity: item.severity,
+      priority: item.priority,
+      insight: item.insight,
+    })),
     currentSolutionContent: context.currentSolutionContent,
   }
 }
