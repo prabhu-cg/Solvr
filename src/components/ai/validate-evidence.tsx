@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
 import {
   EVIDENCE_SEVERITY_LABELS,
@@ -50,7 +51,7 @@ function emptyDraft(type: ValidationEvidenceType = 'observation'): EvidenceDraft
   return { type, title: '', description: '', context: '', relatedTask: '', notes: '', severity: undefined, supportingEvidence: '' }
 }
 
-function EvidenceFormDialog({
+function EvidenceFormSheet({
   open,
   onOpenChange,
   initial,
@@ -82,14 +83,14 @@ function EvidenceFormDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{initial ? 'Edit evidence' : 'Add evidence'}</DialogTitle>
-          <DialogDescription>Capture what you observed, heard, or found while testing outside Solvr.</DialogDescription>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="flex w-full flex-col gap-0 sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>{initial ? 'Edit evidence' : 'Add evidence'}</SheetTitle>
+          <SheetDescription>Capture what you observed, heard, or found while testing outside Solvr.</SheetDescription>
+        </SheetHeader>
 
-        <div className="flex max-h-[65vh] flex-col gap-4 overflow-y-auto py-1 pr-1">
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-6">
           <div className="flex flex-col gap-1.5">
             <Label>Type</Label>
             <SegmentedControl
@@ -173,16 +174,16 @@ function EvidenceFormDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <SheetFooter className="flex-row justify-end gap-2">
           <Button variant="secondary" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={!canSave}>
             {initial ? 'Save changes' : 'Add evidence'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }
 
@@ -190,7 +191,7 @@ export function ValidateEvidenceSection() {
   const { evidence, addEvidence, updateEvidence, deleteEvidence } = useValidationEvidence()
   const readOnly = useProjectStore((state) => state.activeProject?.isSample ?? false)
   const [filter, setFilter] = useState<ValidationEvidenceType | 'all'>('all')
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<ValidationEvidenceItem | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ValidationEvidenceItem | null>(null)
 
@@ -199,12 +200,12 @@ export function ValidateEvidenceSection() {
 
   function openAdd() {
     setEditingItem(null)
-    setDialogOpen(true)
+    setSheetOpen(true)
   }
 
   function openEdit(item: ValidationEvidenceItem) {
     setEditingItem(item)
-    setDialogOpen(true)
+    setSheetOpen(true)
   }
 
   function handleSave(draft: EvidenceDraft) {
@@ -300,7 +301,7 @@ export function ValidateEvidenceSection() {
         )}
       </CardContent>
 
-      <EvidenceFormDialog open={dialogOpen} onOpenChange={setDialogOpen} initial={editingItem} onSave={handleSave} />
+      <EvidenceFormSheet open={sheetOpen} onOpenChange={setSheetOpen} initial={editingItem} onSave={handleSave} />
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent>
