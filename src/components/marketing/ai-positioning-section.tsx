@@ -7,7 +7,8 @@ export function AIPositioningSection() {
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="text-balance text-3xl font-extrabold sm:text-4xl">
+            <p className="text-sm font-bold uppercase tracking-wide text-primary-text">How It Works</p>
+            <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
               More than a generator. A design partner.
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
