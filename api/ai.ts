@@ -65,6 +65,39 @@ const projectContextSchema = z.object({
   currentSolutionContent: z.record(z.string(), z.unknown()).optional(),
 })
 
+/**
+ * Rebuilds the parsed request body into `AIProjectContext` field by field
+ * rather than passing the zod-inferred object straight through. The two
+ * shapes are meant to be identical, but Vercel's separate type-check pass
+ * over `api/` (distinct from this repo's own `tsc -b`) has been seen to
+ * infer the zod object's nested `project` fields as optional where this
+ * repo's own build does not — an explicit, field-by-field reconstruction
+ * checks each value against its real required type instead of relying on
+ * whole-object structural comparison, so it can't be caught by that.
+ */
+function toAIProjectContext(context: z.infer<typeof projectContextSchema>): AIProjectContext {
+  return {
+    project: {
+      name: context.project.name,
+      problem: context.project.problem,
+      productService: context.project.productService,
+      targetUsers: context.project.targetUsers,
+      businessGoal: context.project.businessGoal,
+      constraints: context.project.constraints,
+      evidence: context.project.evidence,
+    },
+    currentStage: context.currentStage,
+    priorAcceptedDeliverables: context.priorAcceptedDeliverables,
+    currentStageDeliverables: context.currentStageDeliverables,
+    knownGaps: context.knownGaps,
+    knownAssumptions: context.knownAssumptions,
+    selectedConcept: context.selectedConcept,
+    validationEvidence: context.validationEvidence,
+    selectedFindings: context.selectedFindings,
+    currentSolutionContent: context.currentSolutionContent,
+  }
+}
+
 const requestSchema = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('generate'),
@@ -162,7 +195,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     if (body.mode === 'generate') {
       const task = AI_TASKS[body.taskId as keyof typeof AI_TASKS]
-      const { instructions, prompt } = buildTaskPrompt(task, body.context, body.instruction)
+      const { instructions, prompt } = buildTaskPrompt(task, toAIProjectContext(body.context), body.instruction)
       const result = streamText({ model: MODEL, instructions, prompt, output: Output.object({ schema: task.schema }) })
 
       for await (const part of result.fullStream) {
@@ -176,7 +209,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // mode === 'critique'
     const instruction = READINESS_TASK_INSTRUCTION[body.stage]
-    const prompt = `${describeReadinessContext(body.context)}\n\n${instruction}`
+    const prompt = `${describeReadinessContext(toAIProjectContext(body.context))}\n\n${instruction}`
     const result = streamText({ model: MODEL, instructions: AI_SYSTEM_PROMPT, prompt, output: Output.object({ schema: READINESS_SCHEMA }) })
 
     for await (const part of result.fullStream) {
