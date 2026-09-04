@@ -11,9 +11,18 @@ import { SAMPLE_PROJECT_STAGES } from '@/data/sampleProjectStages'
 import { db } from '@/repositories/db'
 import type { ProjectRepository } from '@/repositories/ProjectRepository'
 
-/** Normalizes a project read from storage so older records always match the current shape. */
+/**
+ * Normalizes a project read from storage so older records always match the current shape.
+ *
+ * A sample project is read-only and never legitimately diverges from
+ * `SAMPLE_PROJECT_STAGES`, so its stages are always re-seeded from the
+ * current canonical data on read rather than trusted from storage. This
+ * keeps a sample project that was created before a content update (or
+ * before a mid-generation failure was fixed) from staying stuck showing
+ * stale or incomplete content forever — every load self-heals it.
+ */
 function hydrateProject(project: Project): Project {
-  const stages = { ...project.stages }
+  const stages = project.isSample ? structuredClone(SAMPLE_PROJECT_STAGES) : { ...project.stages }
   for (const key of STAGE_KEYS) {
     stages[key] = hydrateStage(stages[key])
   }
@@ -56,7 +65,7 @@ export class LocalProjectRepository implements ProjectRepository {
       businessGoal: input.businessGoal,
       constraints: input.constraints,
       evidence: input.evidence,
-      currentStage: input.isSample ? 'solution' : 'setup',
+      currentStage: input.isSample ? 'iterate' : 'setup',
       stages: input.isSample ? structuredClone(SAMPLE_PROJECT_STAGES) : createProjectStages(),
       isSample: input.isSample,
       createdAt: now,
