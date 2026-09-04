@@ -1,5 +1,5 @@
-import { ArrowLeft, ClipboardList } from 'lucide-react'
-import { Link, NavLink } from 'react-router-dom'
+import { ClipboardList } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 import { StatusBadge } from '@/components/app/status-badge'
 import type { Project } from '@/data/models'
 import {
@@ -23,17 +23,6 @@ export function StageNav({ project, onNavigate }: StageNavProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="border-b border-border p-3">
-        <Link
-          to="/app"
-          onClick={onNavigate}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" aria-hidden />
-          Back to projects
-        </Link>
-      </div>
-
       <nav aria-label="Design process stages" className="flex flex-col gap-1 p-3">
         <NavLink
           to={`/app/projects/${project.id}/setup`}
