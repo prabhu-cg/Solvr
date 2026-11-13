@@ -29,14 +29,14 @@ export function StageNav({ project, onNavigate }: StageNavProps) {
           onClick={onNavigate}
           className={({ isActive }) =>
             cn(
-              'group flex items-start gap-3 rounded-md px-3 py-2.5 text-sm transition-colors',
-              isActive ? 'bg-accent text-accent-foreground' : 'text-foreground hover:bg-muted',
+              'group flex items-start gap-3 rounded-full px-4 py-2.5 text-sm transition-colors',
+              isActive ? 'bg-accent text-accent-foreground' : 'text-ink hover:bg-secondary hover:text-foreground',
             )
           }
         >
           <ClipboardList className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span className="flex-1">
-            <span className="block font-bold">Project Setup</span>
+            <span className="block font-semibold">Project Setup</span>
           </span>
           <StatusBadge status={setupStatus} iconOnly className="mt-0.5" />
         </NavLink>
@@ -55,16 +55,16 @@ export function StageNav({ project, onNavigate }: StageNavProps) {
               title={STAGE_DESCRIPTIONS[key]}
               className={({ isActive }) =>
                 cn(
-                  'group flex items-start gap-3 rounded-md px-3 py-2.5 text-sm transition-colors',
-                  isActive ? 'bg-accent text-accent-foreground' : 'text-foreground hover:bg-muted',
+                  'group flex items-start gap-3 rounded-full px-4 py-2.5 text-sm transition-colors',
+                  isActive ? 'bg-accent text-accent-foreground' : 'text-ink hover:bg-secondary hover:text-foreground',
                 )
               }
             >
-              <span className="mt-0.5 w-4 shrink-0 text-xs font-bold text-muted-foreground">
+              <span className="mt-0.5 w-4 shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
                 {STAGE_ORDER_NUMBER[key]}
               </span>
               <span className="flex-1">
-                <span className="block font-bold">{STAGE_LABELS[key]}</span>
+                <span className="block font-semibold">{STAGE_LABELS[key]}</span>
               </span>
               <StatusBadge status={status} iconOnly className="mt-0.5" />
             </NavLink>

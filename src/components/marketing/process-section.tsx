@@ -54,21 +54,21 @@ export function ProcessSection() {
           <p className="text-sm font-bold uppercase tracking-wide text-primary-text">
             Design Process
           </p>
-          <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
+          <h2 className="mt-2 text-balance text-3xl sm:text-4xl">
             From problem to solution, one step at a time.
           </h2>
         </div>
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
-            <div key={step.number} className="relative rounded-lg border border-border bg-card p-5">
+            <div key={step.number} className="relative rounded-2xl border border-border bg-card p-6">
               <div className="mb-4 flex items-center justify-between">
-                <span className="flex size-9 items-center justify-center rounded-md bg-accent text-accent-foreground">
+                <span className="flex size-9 items-center justify-center rounded-full bg-accent text-accent-foreground">
                   <step.icon className="size-5" />
                 </span>
-                <span className="text-xs font-bold text-muted-foreground">{step.number}</span>
+                <span className="text-xs font-semibold tabular-nums text-muted-foreground">{step.number}</span>
               </div>
-              <h3 className="text-sm font-bold text-foreground">{step.title}</h3>
+              <h3 className="text-base text-foreground">{step.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
             </div>
           ))}

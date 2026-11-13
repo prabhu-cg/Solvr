@@ -46,7 +46,7 @@ export function IteratePage() {
       </StageHeader>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-8 sm:px-8">
-        <div className="rounded-lg border border-border-strong bg-secondary/40 p-4 text-sm leading-relaxed text-muted-foreground">
+        <div className="rounded-lg border border-border-strong bg-surface p-4 text-sm leading-relaxed text-muted-foreground">
           <p>
             Use validated findings to identify what should change and understand how those changes affect your existing
             solution. Solvr will analyse the impact, recommend changes, and propose updates — but it will never overwrite your

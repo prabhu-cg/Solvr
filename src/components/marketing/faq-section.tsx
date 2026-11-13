@@ -43,11 +43,11 @@ const FAQS = [
 
 export function FAQSection() {
   return (
-    <section id="faq" className="scroll-mt-16 border-t border-border bg-secondary py-20 sm:py-28">
+    <section id="faq" className="scroll-mt-16 border-t border-border bg-surface py-20 sm:py-28">
       <Container className="max-w-3xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-wide text-primary-text">FAQ</p>
-          <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
+          <h2 className="mt-2 text-balance text-3xl sm:text-4xl">
             Frequently asked questions
           </h2>
         </div>
@@ -57,12 +57,12 @@ export function FAQSection() {
             <AccordionPrimitive.Item
               key={faq.question}
               value={faq.question}
-              className="overflow-hidden rounded-lg border border-border bg-card"
+              className="overflow-hidden rounded-2xl border border-border bg-card"
             >
               <AccordionPrimitive.Header>
                 <AccordionPrimitive.Trigger
                   className={cn(
-                    'group flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-bold text-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring',
+                    'group flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring',
                   )}
                 >
                   {faq.question}

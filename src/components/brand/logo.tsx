@@ -15,7 +15,7 @@ export function Logo({ className, withTagline = false, size = 'md' }: LogoProps)
       <div className="flex flex-col">
         <span
           className={cn(
-            'font-extrabold tracking-tight text-foreground',
+            'font-semibold tracking-tight text-foreground',
             size === 'md' ? 'text-xl' : 'text-lg',
           )}
         >

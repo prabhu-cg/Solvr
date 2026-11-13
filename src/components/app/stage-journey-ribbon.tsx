@@ -42,7 +42,7 @@ export function StageJourneyRibbon({ steps, content, overrides }: StageJourneyRi
   }
 
   return (
-    <div className="sticky top-0 z-10 -mx-6 overflow-x-auto bg-card px-6 py-3.5 sm:-mx-8 sm:px-8">
+    <div className="sticky top-0 z-10 -mx-6 overflow-x-auto bg-background px-6 py-3.5 sm:-mx-8 sm:px-8">
       <div className="mx-auto flex w-max items-center justify-center gap-1">
         {steps.map((step, i) => {
           const nState = overrides?.[step.key] ?? deliverableNodeState(content[step.key])

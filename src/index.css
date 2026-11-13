@@ -1,52 +1,107 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Dark mode is class-driven (`.dark` on <html>) — light or dark, never "system". */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --font-sans: 'Manrope', 'Manrope Fallback', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Solvr palette — reproduces ReqStudio's design tokens exactly
-     (background / foreground / secondary / card / muted / border /
-     border-strong / primary / status colors), per direct request to
-     match the reference site's warm neutral + rust-orange system. */
-  --color-background: #ffffff;
-  --color-foreground: #1c1917;
-  --color-secondary: #fffaef;
-  --color-secondary-foreground: #1c1917;
+  /* Bold and extra-bold both resolve to 600 (DESIGN.md: "Newsreader for
+     headlines, DM Sans for everything else"). */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 600;
+
+  /* "Butter" palette — white paper on a pale butter desk, butter hairlines and
+     one amber accent. Amber is a fill; text that carries it is ochre
+     (--color-primary-text). Token names are kept from the previous system so
+     every component re-skins through these values. Dark values live in `.dark`. */
+  --color-background: #ffffff; /* paper */
   --color-card: #ffffff;
-  --color-card-foreground: #1c1917;
-  --color-muted: #f4f2ea;
-  --color-muted-foreground: #78716c;
-  --color-border: #e8ddc8;
-  --color-border-strong: #d8c9ac;
-  --color-input: #e8ddc8;
-  --color-ring: #c74504;
+  --color-card-foreground: #4d4a4d;
+  --color-surface: #fcfaf3; /* desk: sidebar, landing bands, grounds */
+  --color-ink: #4d4a4d; /* body text */
+  --color-foreground: #353335; /* ink-strong: headings, button labels */
+  --color-muted-foreground: #6b6b6b; /* ink-muted */
+  --color-secondary: #f8f4e4; /* sand: hover + secondary tints */
+  --color-secondary-foreground: #353335;
+  --color-muted: #f8f4e4;
+  --color-border: #ece5cc; /* hairline */
+  --color-border-strong: #dccfa6; /* hairline-strong */
+  --color-input: #8a7f6e; /* control-border (3:1 for field boundaries) */
+  --color-ring: #826400;
 
-  --color-primary: #c74504;
-  --color-primary-hover: #a93a03;
-  --color-primary-foreground: #ffffff;
-  --color-primary-text: #a93a03;
+  --color-primary: #e8b923; /* amber fill */
+  --color-primary-hover: #d4a615;
+  --color-primary-foreground: #353335; /* charcoal on amber, never white */
+  --color-primary-text: #826400; /* ochre: the only accent allowed as text */
 
-  --color-accent: #fdf1e4;
-  --color-accent-foreground: #a93a03;
+  --color-accent: #faf4df; /* amber tint: selected items, soft badges, icon tiles */
+  --color-accent-foreground: #826400;
 
   --color-success: #146c43;
-  --color-success-soft: #eaf6ef;
+  --color-success-soft: #e6f4ec;
   --color-warning: #8a5a00;
-  --color-warning-soft: #fdf3e3;
-  --color-destructive: #b91c1c;
-  --color-destructive-soft: #fdecec;
-  --color-info: #1d4ed8;
-  --color-info-soft: #eaf0fd;
+  --color-warning-soft: #fdf3e0;
+  --color-destructive: #b3261e;
+  --color-destructive-soft: #fdeceb;
+  --color-info: #1f5f9e;
+  --color-info-soft: #ebf3fb;
 
-  --radius-sm: 6px;
+  /* Shape: 8px fields, 12px menus + inner panels, 20px cards/dialogs, pills. */
+  --radius-sm: 8px;
   --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --radius-2xl: 20px;
 
-  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-md: 0 4px 10px rgba(28, 25, 23, 0.06), 0 2px 4px rgba(28, 25, 23, 0.04);
-  --shadow-lg: 0 12px 24px rgba(28, 25, 23, 0.08), 0 4px 8px rgba(28, 25, 23, 0.04);
+  /* Flat by default — only what leaves the page plane gets a shadow. */
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 8px 20px rgba(53, 51, 53, 0.1), 0 2px 6px rgba(53, 51, 53, 0.06);
+  --shadow-lg: 0 16px 40px rgba(53, 51, 53, 0.16), 0 4px 12px rgba(53, 51, 53, 0.08);
+}
+
+/* Warm charcoal ramp — never neutral grey. */
+.dark {
+  color-scheme: dark;
+
+  --color-background: #141312;
+  --color-card: #1c1b19;
+  --color-card-foreground: #e6e2da;
+  --color-surface: #181716;
+  --color-ink: #e6e2da;
+  --color-foreground: #faf8f2;
+  --color-muted-foreground: #a8a399;
+  --color-secondary: #262420;
+  --color-secondary-foreground: #faf8f2;
+  --color-muted: #262420;
+  --color-border: #2e2b26;
+  --color-border-strong: #433e35;
+  --color-input: #7d7569;
+  --color-ring: #f0c94a;
+
+  --color-primary: #e8b923;
+  --color-primary-hover: #f0c94a;
+  --color-primary-foreground: #353335;
+  --color-primary-text: #f0c94a;
+
+  --color-accent: #2a2410;
+  --color-accent-foreground: #f0c94a;
+
+  --color-success: #5cc796;
+  --color-success-soft: #12281d;
+  --color-warning: #e8b04a;
+  --color-warning-soft: #2a2010;
+  --color-destructive: #f08a82;
+  --color-destructive-soft: #2d1614;
+  --color-info: #7db6ee;
+  --color-info-soft: #14212e;
+
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -58,6 +113,10 @@
     color-scheme: light;
   }
 
+  html.dark {
+    color-scheme: dark;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     html {
       scroll-behavior: smooth;
@@ -67,24 +126,32 @@
   body {
     margin: 0;
     background-color: var(--color-background);
-    color: var(--color-foreground);
+    color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-weight: 800;
-    letter-spacing: -0.02em;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
+}
+
+/* The One Heading Rule — deliberately unlayered so it beats every utility:
+   per-page `font-bold` classes cannot change a heading. */
+h1,
+h2,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+h3,
+h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
 }
 
 @layer utilities {
@@ -94,5 +161,22 @@
 
   .scrollbar-thin {
     scrollbar-width: thin;
+  }
+}
+
+/* Motion explains state: a 180ms opacity-only page fade (no transform, so it
+   can never trap position:fixed drawers). Reduced motion keeps meaning, drops travel. */
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: page-fade 180ms ease-out;
   }
 }

@@ -34,13 +34,13 @@ export function ProjectsListPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-secondary">
+    <div className="flex min-h-screen flex-col bg-surface">
       <AppHeader />
       <main className="flex-1 py-10">
         <div className="mx-auto w-full max-w-6xl px-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Projects</h1>
+              <h1 className="text-3xl text-foreground">Projects</h1>
               <p className="mt-1 text-sm text-muted-foreground">Where your design work stands today.</p>
             </div>
             <Button onClick={() => setNewProjectOpen(true)}>
@@ -52,8 +52,8 @@ export function ProjectsListPage() {
           {!projectsLoaded ? (
             <p className="mt-10 text-sm text-muted-foreground">Loading projects…</p>
           ) : projects.length === 0 ? (
-            <div className="mt-10 flex flex-col items-center gap-4 rounded-xl border border-dashed border-border-strong bg-card px-6 py-16 text-center">
-              <h2 className="text-lg font-bold text-foreground">Start your first project</h2>
+            <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border-strong bg-card px-6 py-16 text-center">
+              <h2 className="text-xl text-foreground">Start your first project</h2>
               <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
                 Describe a problem you’re trying to solve, and Solvr will guide you through
                 understanding it, defining the opportunity, and shaping a solution.

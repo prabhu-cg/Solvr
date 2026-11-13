@@ -36,10 +36,10 @@ function formatRelativeDate(iso: string): string {
 
 export function ProjectCard({ project }: { project: ProjectSummary }) {
   return (
-    <div className="group relative rounded-lg border border-border bg-card p-5 shadow-xs transition-shadow hover:shadow-md">
+    <div className="group relative rounded-2xl border border-border bg-card p-5 transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md motion-reduce:hover:translate-y-0">
       <Link
         to={`/app/projects/${project.id}/${STAGE_ROUTE[project.currentStage]}`}
-        className="absolute inset-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="absolute inset-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         aria-label={`Open ${project.name}`}
       />
 
@@ -53,7 +53,7 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
         </div>
       </div>
 
-      <h3 className="text-base font-bold text-foreground">{project.name}</h3>
+      <h3 className="text-base text-foreground">{project.name}</h3>
       <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{project.problem}</p>
 
       <div className="mt-4 flex items-center gap-3">

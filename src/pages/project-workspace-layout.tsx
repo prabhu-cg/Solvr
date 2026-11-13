@@ -68,7 +68,7 @@ export function ProjectWorkspaceLayout() {
 
   if (status === 'loading' || !activeProject) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-secondary">
+      <div className="flex min-h-screen items-center justify-center bg-surface">
         <p className="text-sm text-muted-foreground">Loading project…</p>
       </div>
     )
@@ -84,7 +84,7 @@ export function ProjectWorkspaceLayout() {
       />
 
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-64 shrink-0 overflow-y-auto border-r border-border bg-card lg:block">
+        <aside className="hidden w-60 shrink-0 overflow-y-auto border-r border-border bg-surface lg:block">
           <StageNav project={activeProject} />
         </aside>
 
@@ -92,13 +92,13 @@ export function ProjectWorkspaceLayout() {
           <Outlet context={{ project: activeProject, patchProject: patchActiveProject } satisfies ProjectOutletContext} />
         </main>
 
-        <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border bg-card xl:block">
+        <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border bg-surface xl:block">
           <ContextPanel project={activeProject} stage={stage} />
         </aside>
       </div>
 
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-        <SheetContent side="left" className="max-w-72 p-0">
+        <SheetContent side="left" className="max-w-72 bg-surface p-0">
           <SheetHeader className="sr-only">
             <SheetTitle>Project navigation</SheetTitle>
           </SheetHeader>

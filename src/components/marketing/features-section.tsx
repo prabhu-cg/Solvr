@@ -36,22 +36,22 @@ const FEATURES = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="scroll-mt-16 border-t border-border bg-secondary py-20 sm:py-28">
+    <section id="features" className="scroll-mt-16 border-t border-border bg-surface py-20 sm:py-28">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-bold uppercase tracking-wide text-primary-text">Features</p>
-          <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
+          <h2 className="mt-2 text-balance text-3xl sm:text-4xl">
             Everything a structured design process needs.
           </h2>
         </div>
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature) => (
-            <div key={feature.title} className="rounded-lg border border-border bg-card p-5">
-              <span className="mb-4 flex size-9 items-center justify-center rounded-md bg-accent text-accent-foreground">
+            <div key={feature.title} className="rounded-2xl border border-border bg-card p-6">
+              <span className="mb-4 flex size-9 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <feature.icon className="size-5" />
               </span>
-              <h3 className="text-sm font-bold text-foreground">{feature.title}</h3>
+              <h3 className="text-base text-foreground">{feature.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
             </div>
           ))}

@@ -1,4 +1,6 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { AboutPage, PrivacyPage, TermsPage } from '@/pages/legal-pages'
 import { DefinePage } from '@/pages/define-page'
 import { DiscoverPage } from '@/pages/discover-page'
 import { IdeatePage } from '@/pages/ideate-page'
@@ -11,10 +13,24 @@ import { ProjectsListPage } from '@/pages/projects-list-page'
 import { SolutionPage } from '@/pages/solution-page'
 import { ValidatePage } from '@/pages/validate-page'
 
+/** Route changes keep the previous scroll position by default; new pages should start at the top (hash links excepted). */
+function ScrollToTop() {
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (!hash) window.scrollTo(0, 0)
+  }, [pathname, hash])
+  return null
+}
+
 function App() {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<MarketingPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
 
       <Route path="/app" element={<ProjectsListPage />} />
       <Route path="/app/new" element={<Navigate to="/app" replace />} />
@@ -36,6 +52,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
 

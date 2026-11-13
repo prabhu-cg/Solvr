@@ -79,7 +79,7 @@ export function ValidatePage() {
       </StageHeader>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-8 sm:px-8">
-        <div className="rounded-lg border border-border-strong bg-secondary/40 p-4 text-sm leading-relaxed text-muted-foreground">
+        <div className="rounded-lg border border-border-strong bg-surface p-4 text-sm leading-relaxed text-muted-foreground">
           <p>
             Prepare a structured plan to test whether your proposed solution meets user needs and project goals, then bring back
             what you learn. Solvr does not conduct usability testing, interviews, prototyping or heuristic reviews itself, and it

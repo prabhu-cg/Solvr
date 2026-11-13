@@ -6,18 +6,14 @@ import { Button } from '@/components/ui/button'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-secondary">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(60%_60%_at_50%_0%,color-mix(in_srgb,var(--color-primary)_10%,transparent),transparent)]"
-      />
+    <section className="relative overflow-hidden bg-surface">
       <Container className="relative py-20 sm:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-card px-3 py-1 text-xs font-semibold text-primary-text">
             AI-guided product design
           </span>
 
-          <h1 className="mt-6 text-balance text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl">
+          <h1 className="mt-6 text-balance text-5xl leading-none text-foreground sm:text-7xl">
             Think through. <span className="text-primary-text">Design better.</span>
           </h1>
 
@@ -35,17 +31,18 @@ export function Hero() {
                 <ArrowRight />
               </Link>
             </Button>
-            <Button size="lg" variant="secondary" asChild>
+            <Button size="lg" variant="outline" asChild>
               <a href="#process">See how it works</a>
             </Button>
           </div>
         </div>
 
         <LaptopMockup
-          src="/app-screenshot.jpg"
+          lightSrc="/mockups/workspace-light-v1.png"
+          darkSrc="/mockups/workspace-dark-v1.png"
           alt="The Solvr workspace showing the Discover stage of a project, with a readiness check surfacing strengths, gaps and critical assumptions alongside the Discover through Iterate stage navigation."
-          width={1469}
-          height={950}
+          width={2880}
+          height={1800}
         />
       </Container>
     </section>

@@ -6,6 +6,7 @@ import { ProjectMenu } from '@/components/app/project-menu'
 import { SaveIndicator } from '@/components/app/save-indicator'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,7 +67,7 @@ export function AppHeader({ project, saveStatus = 'idle', onOpenMobileNav, onOpe
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex min-w-0 items-center gap-1 rounded-md px-1.5 py-1 text-sm font-bold text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  className="flex min-w-0 items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   <span className="truncate">{project.name}</span>
                   <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
@@ -133,6 +134,8 @@ export function AppHeader({ project, saveStatus = 'idle', onOpenMobileNav, onOpe
             <Info className="size-4" />
           </Button>
         )}
+
+        <ThemeToggle />
 
         {project && <ProjectMenu projectId={project.id} projectName={project.name} isSample={project.isSample} />}
       </div>

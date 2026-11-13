@@ -1,61 +1,65 @@
 import type { ReactNode } from 'react'
+import { useEffect } from 'react'
+import { Footer } from '@/components/marketing/footer'
+import { MarketingNav } from '@/components/marketing/marketing-nav'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-const TRIGGER_CLASS = 'text-sm text-muted-foreground transition-colors hover:text-foreground'
-const LINK_CLASS = 'font-medium text-primary-text underline underline-offset-4'
+const LINK_CLASS = 'font-medium text-primary-text underline underline-offset-4 hover:no-underline'
 
-function LegalDialog({
-  trigger,
+function LegalPage({
   title,
   description,
   badge,
   children,
 }: {
-  trigger: string
   title: string
   description?: string
   badge?: ReactNode
   children: ReactNode
 }) {
+  useEffect(() => {
+    document.title = `${title} — Solvr`
+    return () => {
+      document.title = 'Solvr — Think through. Design better.'
+    }
+  }, [title])
+
   return (
-    <Dialog>
-      <DialogTrigger className={TRIGGER_CLASS}>{trigger}</DialogTrigger>
-      <DialogContent className="flex max-h-[85vh] max-w-2xl flex-col overflow-hidden p-0">
-        <div className="border-b border-border px-6 py-4 pr-12">
-          <DialogTitle className="text-base font-bold text-foreground">{title}</DialogTitle>
-          {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
-          {badge && <div className="mt-2">{badge}</div>}
+    <div className="flex min-h-screen flex-col">
+      <MarketingNav />
+      <main className="flex-1 bg-surface">
+        <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
+          <header>
+            {badge && <div className="mb-3">{badge}</div>}
+            <h1 className="text-4xl text-foreground sm:text-5xl">{title}</h1>
+            {description && <p className="mt-3 text-base text-muted-foreground">{description}</p>}
+          </header>
+          <div className="mt-10 flex flex-col gap-8 rounded-2xl border border-border bg-card p-6 text-sm leading-relaxed text-muted-foreground sm:p-8">
+            {children}
+          </div>
         </div>
-        <div className="flex min-h-0 flex-col gap-5 overflow-y-auto px-6 py-5 text-sm leading-relaxed text-muted-foreground">
-          {children}
-        </div>
-      </DialogContent>
-    </Dialog>
+      </main>
+      <Footer />
+    </div>
   )
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground/70">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-foreground">{children}</p>
     </div>
   )
 }
 
 function H({ children }: { children: ReactNode }) {
-  return <h3 className="text-sm font-bold text-foreground">{children}</h3>
+  return <h2 className="font-sans! text-base font-semibold! tracking-normal! text-foreground">{children}</h2>
 }
 
-export function AboutDialog() {
+export function AboutPage() {
   return (
-    <LegalDialog
-      trigger="About"
-      title="About Solvr"
-      description="Think through. Design better."
-      badge={<Badge variant="primary">V1</Badge>}
-    >
+    <LegalPage title="About Solvr" description="Think through. Design better." badge={<Badge variant="primary">V1</Badge>}>
       <div className="flex flex-col gap-3">
         <H>What it is</H>
         <p>
@@ -80,7 +84,7 @@ export function AboutDialog() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-4">
           <Field label="Framework">React 19, TypeScript (strict), Vite</Field>
           <Field label="Styling">Tailwind CSS v4, shadcn-style components on Radix UI primitives</Field>
-          <Field label="Icons & Type">Lucide, Manrope</Field>
+          <Field label="Icons & Type">Lucide, DM Sans and Newsreader</Field>
           <Field label="State">Zustand</Field>
           <Field label="Forms & Validation">React Hook Form with Zod schemas</Field>
           <Field label="Routing">React Router</Field>
@@ -96,39 +100,42 @@ export function AboutDialog() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <H>Who built this</H>
+      <section className="flex flex-col gap-3">
+        <H>Who built Solvr, and why</H>
         <p>
-          Solvr is an independent side project by{' '}
+          Solvr was built by me, Prabhu Raja, a senior designer with 15+ years of experience across enterprise and
+          B2B software. I work on enterprise products, design systems and digital experiences, with a simple aim:
+          designing clarity from complexity.
+        </p>
+        <p>
+          I built it because most product problems don&rsquo;t fail from a lack of effort, they fail from skipping
+          the thinking a proper design process would have forced. Understand the problem, define the opportunity,
+          explore options, specify the solution, then test it and iterate: Solvr puts that discipline into seven
+          guided stages, with AI keeping you honest and a readiness score that names what is still missing.
+        </p>
+        <p>
+          It is an independent project. I scoped, designed and built it myself, with AI in the loop, as part of how
+          I now take products from idea to shipped. You can see more of my work at{' '}
           <a href="https://prabhuraja.vercel.app/" target="_blank" rel="noreferrer" className={LINK_CLASS}>
-            Prabhu Raja
+            prabhuraja.vercel.app
           </a>
-          , a product designer with 15+ years across enterprise and B2B software — currently VP of User Experience
-          at BNY, previously at Thomson Reuters HighQ, Sweepr, and Marston Holdings. Day to day, that work centres
-          on design systems, accessibility, and turning ambiguous, high-stakes workflows into clear, systemised
-          outcomes.
+          .
         </p>
         <p>
-          Solvr grew out of that same instinct: most product problems don&rsquo;t fail from a lack of effort, they
-          fail from skipping the thinking a proper design process would have forced. It&rsquo;s a small, focused
-          tool for doing that thinking anyway — seven guided stages, AI keeping you honest, and a readiness score
-          that names what&rsquo;s still missing.
-        </p>
-        <p>
-          Feedback, feature requests, or just want to say hello —{' '}
+          Feedback, feature requests, or just want to say hello:{' '}
           <a href="mailto:prabhu_cg@proton.me" className={LINK_CLASS}>
             prabhu_cg@proton.me
           </a>
           .
         </p>
-      </div>
-    </LegalDialog>
+      </section>
+    </LegalPage>
   )
 }
 
-export function PrivacyDialog() {
+export function PrivacyPage() {
   return (
-    <LegalDialog trigger="Privacy" title="Privacy Policy" description="Last updated 31 August 2026">
+    <LegalPage title="Privacy Policy" description="Last updated 31 August 2026">
       <div className="flex flex-col gap-2">
         <H>The short version</H>
         <p>
@@ -178,13 +185,13 @@ export function PrivacyDialog() {
           That is server infrastructure logging, not data Solvr collects about you.
         </p>
       </div>
-    </LegalDialog>
+    </LegalPage>
   )
 }
 
-export function TermsDialog() {
+export function TermsPage() {
   return (
-    <LegalDialog trigger="Terms" title="Terms and Conditions" description="Last updated 31 August 2026">
+    <LegalPage title="Terms and Conditions" description="Last updated 31 August 2026">
       <div className="flex flex-col gap-2">
         <H>1. Acceptance</H>
         <p>By using Solvr you agree to these terms. If you do not agree with them, please do not use it.</p>
@@ -238,6 +245,6 @@ export function TermsDialog() {
           accuracy of AI-generated content, or fitness for any particular purpose.
         </p>
       </div>
-    </LegalDialog>
+    </LegalPage>
   )
 }

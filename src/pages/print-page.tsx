@@ -51,8 +51,8 @@ export function PrintPage() {
           background: #fff;
         }
         .doc-h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 4px; }
-        .doc-h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin: 40px 0 4px; border-top: 1px solid #e4e3ec; padding-top: 24px; }
-        .doc-h3 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; color: #a93a03; }
+        .doc-h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin: 40px 0 4px; border-top: 1px solid #ece5cc; padding-top: 24px; }
+        .doc-h3 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; color: #826400; }
         .doc-p { font-size: 13px; line-height: 1.6; margin: 0 0 8px; color: #18181b; }
         .doc-empty { font-size: 13px; color: #6f6f78; font-style: italic; margin: 0 0 8px; }
         .doc-list { margin: 0 0 10px; padding-left: 20px; font-size: 13px; line-height: 1.6; }
@@ -62,8 +62,8 @@ export function PrintPage() {
         .doc-kv-row dt { font-weight: 700; flex-shrink: 0; }
         .doc-kv-row dd { margin: 0; color: #333; }
         .doc-table { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: 12px; }
-        .doc-table th, .doc-table td { border: 1px solid #e4e3ec; padding: 6px 8px; text-align: left; vertical-align: top; }
-        .doc-table th { background: #f4f4f6; font-weight: 700; }
+        .doc-table th, .doc-table td { border: 1px solid #ece5cc; padding: 6px 8px; text-align: left; vertical-align: top; }
+        .doc-table th { background: #f8f4e4; font-weight: 700; }
         .doc-note { font-size: 12px; font-style: italic; color: #8a5a00; background: #fdf3e3; border-radius: 6px; padding: 8px 10px; margin: 0 0 10px; }
 
         @media print {

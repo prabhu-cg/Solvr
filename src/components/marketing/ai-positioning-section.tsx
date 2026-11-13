@@ -8,7 +8,7 @@ export function AIPositioningSection() {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-primary-text">How It Works</p>
-            <h2 className="mt-2 text-balance text-3xl font-extrabold sm:text-4xl">
+            <h2 className="mt-2 text-balance text-3xl sm:text-4xl">
               More than a generator. A design partner.
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
@@ -18,8 +18,8 @@ export function AIPositioningSection() {
           </div>
 
           <div className="grid gap-3">
-            <div className="flex gap-3 rounded-lg border border-border bg-card p-4">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+            <div className="flex gap-3 rounded-2xl border border-border bg-card p-5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <Sparkles className="size-5" />
               </span>
               <div>
@@ -27,8 +27,8 @@ export function AIPositioningSection() {
                 <p className="text-sm text-muted-foreground">Flags what’s missing before it becomes a costly assumption.</p>
               </div>
             </div>
-            <div className="flex gap-3 rounded-lg border border-border bg-card p-4">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+            <div className="flex gap-3 rounded-2xl border border-border bg-card p-5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <MessageSquareWarning className="size-5" />
               </span>
               <div>
@@ -36,8 +36,8 @@ export function AIPositioningSection() {
                 <p className="text-sm text-muted-foreground">Pushes back rather than accepting the first framing of a problem.</p>
               </div>
             </div>
-            <div className="flex gap-3 rounded-lg border border-border bg-card p-4">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+            <div className="flex gap-3 rounded-2xl border border-border bg-card p-5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                 <AlertTriangle className="size-5" />
               </span>
               <div>
